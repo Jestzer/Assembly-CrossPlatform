@@ -31,7 +31,16 @@ namespace AssemblyAvalonia.Models.MetaData
 			{
 				_name = value;
 				NotifyPropertyChanged("Name");
+				NotifyPropertyChanged("DisplayName");
 			}
+		}
+
+		/// <summary>
+		///     Display-friendly name that falls back to offset when name is empty.
+		/// </summary>
+		public string DisplayName
+		{
+			get { return string.IsNullOrWhiteSpace(_name) ? $"[0x{_offset:X}]" : _name; }
 		}
 
 		/// <summary>

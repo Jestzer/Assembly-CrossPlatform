@@ -98,6 +98,45 @@ public partial class MainWindow : Window
 		Close();
 	}
 
+	private void MenuMapCompressor_Click(object? sender, RoutedEventArgs e)
+	{
+		// Check if already open
+		foreach (TabItem tab in DocumentTabs.Items.Cast<TabItem>())
+		{
+			if (tab.Tag is string tag && tag == "MapCompressor")
+			{
+				DocumentTabs.SelectedItem = tab;
+				return;
+			}
+		}
+
+		var compressorView = new MapCompressorView(this);
+		var newTab = new TabItem
+		{
+			Tag = "MapCompressor",
+			Content = compressorView
+		};
+
+		var headerPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+		headerPanel.Children.Add(new TextBlock { Text = "Map Compressor", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+		var closeBtn = new Button
+		{
+			Content = "\u00D7",
+			FontSize = 14,
+			Padding = new Avalonia.Thickness(4, 0),
+			MinWidth = 0,
+			MinHeight = 0,
+			Background = Avalonia.Media.Brushes.Transparent,
+			BorderThickness = new Avalonia.Thickness(0)
+		};
+		closeBtn.Click += (_, _) => DocumentTabs.Items.Remove(newTab);
+		headerPanel.Children.Add(closeBtn);
+		newTab.Header = headerPanel;
+
+		DocumentTabs.Items.Add(newTab);
+		DocumentTabs.SelectedItem = newTab;
+	}
+
 	private void MenuAbout_Click(object? sender, RoutedEventArgs e)
 	{
 		StatusText.Text = "Assembly - Cross Platform | Halo Cache File Editor | GPL-3.0";

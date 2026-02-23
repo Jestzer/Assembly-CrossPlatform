@@ -5,7 +5,12 @@
     <RootNamespace>AssemblyAvalonia</RootNamespace>
     <AssemblyName>AssemblyAvalonia</AssemblyName>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>Assets/app_icon_large.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/app_icon_large.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.3" />

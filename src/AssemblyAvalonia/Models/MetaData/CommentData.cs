@@ -18,7 +18,13 @@
 			{
 				_name = value;
 				NotifyPropertyChanged("Name");
+				NotifyPropertyChanged("DisplayName");
 			}
+		}
+
+		public string DisplayName
+		{
+			get { return string.IsNullOrWhiteSpace(_name) ? "[Comment]" : _name; }
 		}
 
 		public string Text

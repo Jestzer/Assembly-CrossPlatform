@@ -56,9 +56,11 @@ namespace AssemblyAvalonia.Plugins
 
 		public ObservableCollection<MetaField> Values { get; private set; }
 		public ObservableCollection<TagBlockData> TagBlocks { get; private set; }
+		public int BaseSize { get; private set; }
 
 		public bool EnterPlugin(int baseSize)
 		{
+			BaseSize = baseSize;
 			return true;
 		}
 

@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AssemblyAvalonia.Views.MapCompressorView">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="16" Spacing="16" MaxWidth="700" HorizontalAlignment="Left">
+
+      <!-- Single File -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Single File" FontSize="16" FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBlock Text="Select a map file to toggle its compression state. The tool auto-detects the format and current state."
+                     Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" />
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+            <TextBox x:Name="SingleFilePath" Grid.Column="0" Watermark="Select a .map file..."
+                     IsReadOnly="True" Padding="6,4" />
+            <Button Grid.Column="1" Content="Browse..." Click="BrowseFile_Click"
+                    Padding="12,4" Margin="8,0,0,0" />
+          </Grid>
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button x:Name="BtnDoSingle" Content="De/Compress" Click="DoCompression_Click"
+                    Padding="16,6" />
+            <Button Content="Open Map" Click="OpenMap_Click" Padding="16,6" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Batch -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Batch" FontSize="16" FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBlock Text="Select a folder containing .map files to compress or decompress all of them."
+                     Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" />
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+            <TextBox x:Name="BatchFolderPath" Grid.Column="0" Watermark="Select a folder..."
+                     IsReadOnly="True" Padding="6,4" />
+            <Button Grid.Column="1" Content="Browse..." Click="BrowseFolder_Click"
+                    Padding="12,4" Margin="8,0,0,0" />
+          </Grid>
+
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button x:Name="BtnBatchCompress" Content="Compress All" Click="BatchCompress_Click"
+                    Padding="16,6" />
+            <Button x:Name="BtnBatchDecompress" Content="Decompress All" Click="BatchDecompress_Click"
+                    Padding="16,6" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Info -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Supported Formats" FontSize="14" FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBlock Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap"
+                     Text="Halo 1 Xbox &#x2022; Halo 1 Anniversary MCC &#x2022; Halo 2 Classic MCC &#x2022; Halo 2 Anniversary MCC (decompress only)" />
+        </StackPanel>
+      </Border>
+
+      <!-- Status log -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Log" FontSize="14" FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBox x:Name="StatusLog" IsReadOnly="True" AcceptsReturn="True"
+                   FontFamily="Cascadia Mono,Consolas,Courier New,monospace" FontSize="12"
+                   Background="Transparent" BorderThickness="0"
+                   Height="150" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

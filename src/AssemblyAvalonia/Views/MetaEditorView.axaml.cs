@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Xml;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using AssemblyAvalonia.Helpers;
 using AssemblyAvalonia.Models;
@@ -33,6 +37,7 @@ public partial class MetaEditorView : UserControl
 	private Trie _stringIdTrie;
 	private string _filePath;
 	private MainWindow _parentWindow;
+	private int _baseSize;
 
 	public MetaEditorView()
 	{
@@ -126,9 +131,11 @@ public partial class MetaEditorView : UserControl
 
 			// Display fields
 			_fields = _pluginVisitor.Values;
+			_baseSize = _pluginVisitor.BaseSize;
 			FieldList.ItemsSource = _fields;
 
 			SaveButton.IsVisible = true;
+			HexToggle.IsVisible = true;
 		}
 		catch (Exception ex)
 		{
@@ -161,5 +168,107 @@ public partial class MetaEditorView : UserControl
 		{
 			_parentWindow?.SetStatus($"Save failed: {ex.Message}");
 		}
+	}
+
+	private void SearchBox_TextChanged(object? sender, TextChangedEventArgs e)
+	{
+		if (_pluginVisitor == null)
+			return;
+
+		string filter = SearchBox.Text?.Trim() ?? "";
+		if (string.IsNullOrEmpty(filter))
+		{
+			FieldList.ItemsSource = _pluginVisitor.Values;
+			return;
+		}
+
+		string lowerFilter = filter.ToLowerInvariant();
+		var filtered = new List<MetaField>();
+		foreach (var field in _pluginVisitor.Values)
+		{
+			string name = GetFieldName(field);
+			if (name != null && name.ToLowerInvariant().Contains(lowerFilter))
+				filtered.Add(field);
+		}
+		FieldList.ItemsSource = filtered;
+	}
+
+	private static string GetFieldName(MetaField field)
+	{
+		if (field is ValueField vf)
+			return vf.DisplayName;
+		if (field is CommentData cd)
+			return cd.DisplayName;
+		if (field is WrappedTagBlockEntry wt)
+			return GetFieldName(wt.WrappedField);
+		return null;
+	}
+
+	private void HexToggle_Click(object? sender, RoutedEventArgs e)
+	{
+		bool showHex = HexToggle is ToggleButton tb && tb.IsChecked == true;
+		if (showHex)
+		{
+			LoadHexView();
+			HexScroller.IsVisible = true;
+			FieldScroller.IsVisible = false;
+		}
+		else
+		{
+			HexScroller.IsVisible = false;
+			FieldScroller.IsVisible = true;
+		}
+	}
+
+	private void LoadHexView()
+	{
+		try
+		{
+			var fsm = new FileStreamManager(_filePath, _buildInfo.Endian);
+			using (var reader = fsm.OpenRead())
+			{
+				long offset = (uint)_tag.RawTag.MetaLocation.AsOffset();
+				reader.SeekTo(offset);
+				int size = _baseSize > 0 ? _baseSize : 4096;
+				byte[] data = reader.ReadBlock(size);
+				HexDisplay.Text = FormatHexDump(data, offset);
+			}
+		}
+		catch (Exception ex)
+		{
+			HexDisplay.Text = $"Error reading hex data: {ex.Message}";
+		}
+	}
+
+	private static string FormatHexDump(byte[] data, long baseOffset)
+	{
+		var sb = new StringBuilder();
+		for (int i = 0; i < data.Length; i += 16)
+		{
+			sb.Append($"{baseOffset + i:X8}  ");
+
+			// Hex bytes
+			for (int j = 0; j < 16; j++)
+			{
+				if (i + j < data.Length)
+					sb.Append($"{data[i + j]:X2} ");
+				else
+					sb.Append("   ");
+				if (j == 7)
+					sb.Append(' ');
+			}
+
+			sb.Append(" |");
+
+			// ASCII
+			for (int j = 0; j < 16 && i + j < data.Length; j++)
+			{
+				byte b = data[i + j];
+				sb.Append(b >= 0x20 && b <= 0x7E ? (char)b : '.');
+			}
+
+			sb.AppendLine("|");
+		}
+		return sb.ToString();
 	}
 }

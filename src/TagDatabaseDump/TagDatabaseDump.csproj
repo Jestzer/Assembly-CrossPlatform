@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TagDatabaseDump</RootNamespace>
+    <AssemblyName>TagDatabaseDump</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blamite\Blamite.csproj" />
+  </ItemGroup>
+
+</Project>

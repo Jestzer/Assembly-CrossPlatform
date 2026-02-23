@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if WINDOWS
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -153,3 +154,4 @@ namespace Blamite.RTE.PC.Native
 		#endregion Native Functions
 	}
 }
+#endif

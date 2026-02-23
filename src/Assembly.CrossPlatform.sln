@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blamite", "Blamite\Blamite.csproj", "{4FE3733B-74F5-4E0A-B0D6-DC5F75A5655C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapExpandDotNet", "MapExpandDotNet\MapExpandDotNet.csproj", "{F33172BD-C99B-425E-86A8-096E1B74DFAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringDump", "StringDump\StringDump.csproj", "{2883137A-6B6B-4193-B03E-2DA5EAAD3B39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedDump", "SharedDump\SharedDump.csproj", "{BA328F89-B8EA-4CD3-A343-A87ABE494602}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockAlignmentScanner", "BlockAlignmentScanner\BlockAlignmentScanner.csproj", "{42964EFA-EA78-4605-A08A-45C42479676D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptWalkerApp", "ScriptWalker\ScriptWalkerApp.csproj", "{0CE0E745-C875-4218-A4A3-F39C1A6BE91E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptTool", "ScriptTool\ScriptTool.csproj", "{D753CD70-0807-485D-8FAA-677DF75BF404}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4FE3733B-74F5-4E0A-B0D6-DC5F75A5655C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FE3733B-74F5-4E0A-B0D6-DC5F75A5655C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FE3733B-74F5-4E0A-B0D6-DC5F75A5655C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FE3733B-74F5-4E0A-B0D6-DC5F75A5655C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F33172BD-C99B-425E-86A8-096E1B74DFAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F33172BD-C99B-425E-86A8-096E1B74DFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F33172BD-C99B-425E-86A8-096E1B74DFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F33172BD-C99B-425E-86A8-096E1B74DFAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2883137A-6B6B-4193-B03E-2DA5EAAD3B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2883137A-6B6B-4193-B03E-2DA5EAAD3B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2883137A-6B6B-4193-B03E-2DA5EAAD3B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2883137A-6B6B-4193-B03E-2DA5EAAD3B39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA328F89-B8EA-4CD3-A343-A87ABE494602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA328F89-B8EA-4CD3-A343-A87ABE494602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA328F89-B8EA-4CD3-A343-A87ABE494602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA328F89-B8EA-4CD3-A343-A87ABE494602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42964EFA-EA78-4605-A08A-45C42479676D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42964EFA-EA78-4605-A08A-45C42479676D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42964EFA-EA78-4605-A08A-45C42479676D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42964EFA-EA78-4605-A08A-45C42479676D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE0E745-C875-4218-A4A3-F39C1A6BE91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE0E745-C875-4218-A4A3-F39C1A6BE91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE0E745-C875-4218-A4A3-F39C1A6BE91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE0E745-C875-4218-A4A3-F39C1A6BE91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D753CD70-0807-485D-8FAA-677DF75BF404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D753CD70-0807-485D-8FAA-677DF75BF404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D753CD70-0807-485D-8FAA-677DF75BF404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D753CD70-0807-485D-8FAA-677DF75BF404}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

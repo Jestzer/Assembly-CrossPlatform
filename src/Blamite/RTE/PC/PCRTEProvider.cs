@@ -1,4 +1,5 @@
-﻿using Blamite.Blam;
+﻿#if WINDOWS
+using Blamite.Blam;
 using Blamite.IO;
 using Blamite.Serialization;
 using Blamite.Util;
@@ -230,3 +231,4 @@ namespace Blamite.RTE.PC
 		protected static readonly int MapHeaderMagic = CharConstant.FromString("head");
 	}
 }
+#endif

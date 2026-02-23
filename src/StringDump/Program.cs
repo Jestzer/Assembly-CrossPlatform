@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using Blamite.Blam;
 using Blamite.Blam.Localization;
 using Blamite.Serialization;
@@ -13,23 +12,22 @@ namespace StringDump
 {
 	internal class Program
 	{
-		[STAThread]
 		private static void Main(string[] args)
 		{
-			var ofd = new OpenFileDialog();
-			ofd.Title = "Open Cache File";
-			ofd.Filter = "Blam Cache Files|*.map";
-			if (ofd.ShowDialog() != DialogResult.OK)
+			if (args.Length != 2)
+			{
+				Console.WriteLine("Usage: StringDump <map file> <output text file>");
 				return;
+			}
 
-			var sfd = new SaveFileDialog();
-			sfd.Title = "Save String Dump";
-			sfd.Filter = "Text Files|*.txt";
-			if (sfd.ShowDialog() != DialogResult.OK)
+			string mapPath = args[0];
+			string dumpPath = args[1];
+
+			if (!File.Exists(mapPath))
+			{
+				Console.WriteLine("Error: Map file not found: {0}", mapPath);
 				return;
-
-			string mapPath = ofd.FileName;
-			string dumpPath = sfd.FileName;
+			}
 
 			EngineDatabase engineDb = XMLEngineDatabaseLoader.LoadDatabase("Formats/Engines.xml");
 			ICacheFile cacheFile;

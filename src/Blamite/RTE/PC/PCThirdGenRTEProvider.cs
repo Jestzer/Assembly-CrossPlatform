@@ -1,4 +1,5 @@
-﻿using Blamite.Blam;
+﻿#if WINDOWS
+using Blamite.Blam;
 using Blamite.IO;
 using Blamite.RTE.PC.Native;
 using Blamite.Serialization;
@@ -120,3 +121,4 @@ namespace Blamite.RTE.PC
 		}
 	}
 }
+#endif

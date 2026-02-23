@@ -1,9 +1,12 @@
-﻿using Blamite.RTE.Console;
+using Blamite.RTE.Console;
 using System;
+using System.Runtime.InteropServices;
+
+#if WINDOWS
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
+#endif
 
 namespace Blamite.RTE.Console.Native
 {
@@ -64,6 +67,7 @@ namespace Blamite.RTE.Console.Native
 			ColorSpace = colorspace.HasValue ? (int)colorspace.Value : 0;
 		}
 
+#if WINDOWS
 		/// <summary>
 		/// Converts the raw pixel data into a Bitmap.
 		/// </summary>
@@ -156,6 +160,7 @@ namespace Blamite.RTE.Console.Native
 		[DllImport("gdi32")]
 		private static extern int DeleteObject(IntPtr o);
 		#endregion
+#endif
 
 		private static byte[] ConvertA2B10G10R10ToA8R8G8B8(byte[] buffer, int width, int height, bool gamma)
 		{

@@ -137,9 +137,10 @@ public partial class MainWindow : Window
 		DocumentTabs.SelectedItem = newTab;
 	}
 
-	private void MenuAbout_Click(object? sender, RoutedEventArgs e)
+	private async void MenuAbout_Click(object? sender, RoutedEventArgs e)
 	{
-		StatusText.Text = "Assembly - Cross Platform | Halo Cache File Editor | GPL-3.0";
+		var about = new AboutWindow();
+		await about.ShowDialog(this);
 	}
 
 	public void SetStatus(string text)

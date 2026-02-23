@@ -2,11 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="AssemblyAvalonia.Views.AboutWindow"
         Title="About Assembly"
-        Width="480" Height="520"
+        Width="480" Height="580"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="#FF1E1E1E">
 
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
   <StackPanel Margin="30,24,30,20">
 
     <!-- Title -->
@@ -71,5 +72,6 @@
             Click="OK_Click" />
 
   </StackPanel>
+  </ScrollViewer>
 
 </Window>

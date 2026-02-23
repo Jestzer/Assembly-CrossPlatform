@@ -156,13 +156,16 @@ public partial class HaloMapView : UserControl, IDisposable
 			_hierarchy.Groups.Add(g);
 
 		// Build header info
+		string mapName = MapNameLookup.GetMapName(_cacheFile.InternalName, _buildInfo.Name);
 		var headerValues = new List<HeaderValue>
 		{
 			new HeaderValue("Engine", _buildInfo.Name),
 			new HeaderValue("Internal Name", _cacheFile.InternalName),
-			new HeaderValue("Scenario", _cacheFile.ScenarioName),
-			new HeaderValue("Tags", _cacheFile.Tags.Count.ToString()),
 		};
+		if (mapName != null)
+			headerValues.Add(new HeaderValue("Map Name", mapName));
+		headerValues.Add(new HeaderValue("Scenario", _cacheFile.ScenarioName));
+		headerValues.Add(new HeaderValue("Tags", _cacheFile.Tags.Count.ToString()));
 
 		if (_cacheFile.StringIDs != null)
 			headerValues.Add(new HeaderValue("String IDs", _cacheFile.StringIDs.Count.ToString()));

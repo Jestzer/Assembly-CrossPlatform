@@ -1,4 +1,4 @@
-﻿using Blamite.IO;
+using Blamite.IO;
 using Blamite.Serialization;
 using Blamite.Util;
 using System;
@@ -33,39 +33,37 @@ namespace Blamite.Compression
 		{
 			string tempFile = Path.GetTempFileName();
 
-			using (FileStream fsOutput = new FileStream(tempFile, FileMode.OpenOrCreate))
+			using (var fsOutput = new FileStream(tempFile, FileMode.OpenOrCreate))
+			using (var fsInput = new FileStream(cacheFile, FileMode.Open))
+			using (var erInput = new EndianReader(fsInput, Endian.LittleEndian))
 			{
-				using (FileStream fsInput = new FileStream(cacheFile, FileMode.Open))
+				// Header is uncompressed
+				fsOutput.Write(erInput.ReadBlock(headerSize), 0, headerSize);
+
+				// Read data from 0x800 offset
+				fsInput.Seek(0x800, SeekOrigin.Begin);
+				int dataSize = (int)fsInput.Length - 0x800;
+				byte[] chunkData = new byte[dataSize];
+				int bytesRead = 0;
+				while (bytesRead < dataSize)
 				{
-					using (EndianReader erInput = new EndianReader(fsInput, Endian.LittleEndian))
-					{
-						//header is uncompressed
-						fsOutput.Write(erInput.ReadBlock(headerSize), 0, headerSize);
+					int read = fsInput.Read(chunkData, bytesRead, dataSize - bytesRead);
+					if (read == 0) break;
+					bytesRead += read;
+				}
 
-						int realsize = (int)fsInput.Length - headerSize;
-						byte[] chunkData = new byte[realsize];
+				// Compress using ZLibStream (handles ZLib header + DEFLATE + Adler-32)
+				using (var zlib = new ZLibStream(fsOutput, CompressionLevel.Optimal, true))
+				{
+					zlib.Write(chunkData, 0, bytesRead);
+				}
 
-						fsInput.Seek(0x800, SeekOrigin.Begin);
-						fsInput.Read(chunkData, 0, realsize);
-
-						fsOutput.WriteByte(0x78);
-						fsOutput.WriteByte(0x9C);
-
-						using (DeflateStream ds = new DeflateStream(fsOutput, CompressionMode.Compress, true))
-						{
-							realsize = fsInput.Read(chunkData, 0, chunkData.Length);
-							ds.Write(chunkData, 0, chunkData.Length);
-						}
-
-						// NOTE: actual zlib has an adler-32 checksum trailer on the end
-						uint adler = Adler32.Calculate(chunkData);
-						fsOutput.Write(BitConverter.GetBytes(adler), 0, 4);
-
-						// CE xbox has some padding on the end to a 0x800 alignment
-						int pad_size = 0x800 - ((int)fsOutput.Length % 0x800);
-						byte[] padding = new byte[pad_size];
-						fsOutput.Write(padding, 0, pad_size);
-					}
+				// CE Xbox pads to 0x800 alignment
+				int remainder = (int)fsOutput.Length % 0x800;
+				if (remainder != 0)
+				{
+					int padSize = 0x800 - remainder;
+					fsOutput.Write(new byte[padSize], 0, padSize);
 				}
 			}
 
@@ -77,26 +75,18 @@ namespace Blamite.Compression
 		{
 			string tempFile = Path.GetTempFileName();
 
-			using (FileStream fsOutput = new FileStream(tempFile, FileMode.OpenOrCreate))
+			using (var fsOutput = new FileStream(tempFile, FileMode.OpenOrCreate))
+			using (var fsInput = new FileStream(cacheFile, FileMode.Open))
+			using (var erInput = new EndianReader(fsInput, Endian.LittleEndian))
 			{
-				using (FileStream fsInput = new FileStream(cacheFile, FileMode.Open))
+				// Header is uncompressed
+				fsOutput.Write(erInput.ReadBlock(headerSize), 0, headerSize);
+
+				// Decompress using ZLibStream (handles ZLib header + DEFLATE + Adler-32)
+				fsInput.Seek(headerSize, SeekOrigin.Begin);
+				using (var zlib = new ZLibStream(fsInput, CompressionMode.Decompress, true))
 				{
-					using (EndianReader erInput = new EndianReader(fsInput, Endian.LittleEndian))
-					{
-						int fileSize = mapsize - headerSize;
-
-						//header is uncompressed
-						fsOutput.Write(erInput.ReadBlock(headerSize), 0, headerSize);
-
-						byte[] chunkData = new byte[fileSize];
-
-						fsInput.Seek(headerSize + 2, SeekOrigin.Begin);
-						using (DeflateStream ds = new DeflateStream(fsInput, CompressionMode.Decompress, true))
-						{
-							fileSize = ds.Read(chunkData, 0, chunkData.Length);
-						}
-						fsOutput.Write(chunkData, 0, fileSize);
-					}
+					zlib.CopyTo(fsOutput);
 				}
 			}
 

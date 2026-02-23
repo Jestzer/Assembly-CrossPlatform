@@ -38,6 +38,8 @@
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="{Binding TagGroupMagic}" FontWeight="Bold" />
               <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding Children.Count, StringFormat='({0})'}"
+                         Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" />
             </StackPanel>
           </TreeDataTemplate>
           <!-- TagEntry is a leaf node -->

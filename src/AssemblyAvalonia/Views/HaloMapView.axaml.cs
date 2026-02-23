@@ -107,7 +107,16 @@ public partial class HaloMapView : UserControl, IDisposable
 			if (!groups.TryGetValue(tag.Group, out var group))
 			{
 				string magic = CharConstant.ToString(tag.Group.Magic);
-				group = new TagGroup(tag.Group, magic, magic);
+
+				// Resolve description: StringID first, then GroupNames, then magic
+				string desc = null;
+				if (tag.Group.Description.Value != 0 && _cacheFile.StringIDs != null)
+					desc = _cacheFile.StringIDs.GetString(tag.Group.Description);
+				if (desc == null && _buildInfo.GroupNames != null)
+					desc = _buildInfo.GroupNames.RetrieveName(magic);
+				desc ??= magic;
+
+				group = new TagGroup(tag.Group, magic, desc);
 				groups[tag.Group] = group;
 			}
 
@@ -144,6 +153,7 @@ public partial class HaloMapView : UserControl, IDisposable
 			string fileName = Path.GetFileName(_filePath);
 			string game = _buildInfo.Name;
 			_parentWindow.SetStatus($"Loaded {fileName} ({game}) - {_cacheFile.Tags.Count} tags");
+			_parentWindow.Title = $"Assembly - {fileName}";
 
 			// Add to recent files
 			AppState.Settings.AddRecentFile(fileName, _filePath, game);
@@ -200,7 +210,7 @@ public partial class HaloMapView : UserControl, IDisposable
 			_parentWindow.SetStatus($"Loading tag: [{entry.GroupName}] {entry.TagFileName}...");
 
 			var metaEditor = new MetaEditorView();
-			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie);
+			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow);
 			MetaContent.Content = metaEditor;
 
 			_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");

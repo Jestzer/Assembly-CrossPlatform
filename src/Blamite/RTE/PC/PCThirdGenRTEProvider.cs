@@ -1,4 +1,3 @@
-﻿#if WINDOWS
 using Blamite.Blam;
 using Blamite.IO;
 using Blamite.RTE.PC.Native;
@@ -55,9 +54,9 @@ namespace Blamite.RTE.PC
 				return null;
 			}
 
-			ProcessMemoryStream gameMemory = new ProcessMemoryStream(gameProcess, gameModule);
+			ProcessMemoryStream gameMemory = CreateMemoryStream(gameProcess, gameModule);
 
-			_baseAddress = (long)gameMemory.BaseModule.BaseAddress;
+			_baseAddress = gameMemory.ModuleBaseAddress;
 
 			var reader = new EndianReader(gameMemory, BitConverter.IsLittleEndian ? Endian.LittleEndian : Endian.BigEndian);
 
@@ -121,4 +120,3 @@ namespace Blamite.RTE.PC
 		}
 	}
 }
-#endif

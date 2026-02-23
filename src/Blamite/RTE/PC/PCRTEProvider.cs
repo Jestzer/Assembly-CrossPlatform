@@ -1,10 +1,12 @@
-﻿#if WINDOWS
 using Blamite.Blam;
 using Blamite.IO;
+using Blamite.RTE.PC.Native;
 using Blamite.Serialization;
 using Blamite.Util;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Blamite.RTE.PC
 {
@@ -81,9 +83,6 @@ namespace Blamite.RTE.PC
 			PokingInformation info = null;
 			try
 			{
-				//TODO: make winstore support not horrible; have user set their modifiablewindowsapps dir so fileversioninfo can actually be read? trying to read it from the process memory sounds like a pain in the ass
-				//then again touching \Program Files will probably want admin or something and thats gross.
-
 				//check against module version if applicable in case there is a mismatch by the user for some reason
 				if (gameModule != null)
 					version = gameModule.FileVersionInfo.FileVersion;
@@ -109,6 +108,19 @@ namespace Blamite.RTE.PC
 			{
 				ErrorMessage = "Cannot access game process. The following exception occured:\r\n\"" + e.Message + "\"\r\n\r\nThis could be due to Anti-Cheat or lack of admin privileges.";
 				return null;
+			}
+			catch (Exception e)
+			{
+				// On Linux/Proton, different exceptions may occur when accessing process info.
+				// Fall back to latest poking definition.
+				info = _buildInfo.Poking.RetrieveLatestInfo();
+
+				if (info == null)
+				{
+					ErrorMessage = "Could not determine game version and no fallback poking definitions are available. Exception: " + e.Message;
+					return null;
+				}
+				_hadToGuessVersion = true;
 			}
 
 			return info;
@@ -144,6 +156,11 @@ namespace Blamite.RTE.PC
 
 		private Process FindGameProcessByName(string name)
 		{
+			// On Linux, use /proc/cmdline scanning to avoid 15-char truncation
+			// issues with Wine/Proton process names
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				return LinuxProcessHelper.FindProcessByName(name);
+
 			Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(name));
 
 			if (processes.Length > 0)
@@ -169,6 +186,11 @@ namespace Blamite.RTE.PC
 						if (string.Equals(Path.GetFileNameWithoutExtension(m.ModuleName), _buildInfo.PokingModule, System.StringComparison.InvariantCultureIgnoreCase))
 							return m;
 
+					// On Linux, module enumeration may not find Wine/Proton PE modules.
+					// Return null without error; CreateMemoryStream will fall back to /proc/maps.
+					if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+						return null;
+
 					ErrorMessage = "Game process \"" + _buildInfo.PokingExecutable + "\" does not appear to be currently running any module named \"" + _buildInfo.PokingModule + "\".";
 					errorOccured = true;
 				}
@@ -182,6 +204,27 @@ namespace Blamite.RTE.PC
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		///     Creates a ProcessMemoryStream for the given process and module.
+		///     On Linux, falls back to /proc/maps if the ProcessModule is unavailable.
+		/// </summary>
+		protected ProcessMemoryStream CreateMemoryStream(Process gameProcess, ProcessModule gameModule)
+		{
+			if (gameModule != null || RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				return ProcessMemoryStream.Create(gameProcess, gameModule);
+
+			// Linux fallback: try to find the module via /proc/maps
+			string moduleName = _buildInfo.PokingModule ?? _buildInfo.PokingExecutable;
+			long baseAddr = LinuxProcessHelper.FindModuleBaseAddress(gameProcess.Id, moduleName);
+			int moduleSize = LinuxProcessHelper.FindModuleMemorySize(gameProcess.Id, moduleName);
+
+			if (baseAddr != 0)
+				return ProcessMemoryStream.Create(gameProcess, baseAddr, moduleSize);
+
+			// Last resort: use main module (may point to wine-preloader on Proton)
+			return ProcessMemoryStream.Create(gameProcess, null);
 		}
 
 		protected void GetLayoutConstants(EngineDescription engineInfo)
@@ -231,4 +274,3 @@ namespace Blamite.RTE.PC
 		protected static readonly int MapHeaderMagic = CharConstant.FromString("head");
 	}
 }
-#endif

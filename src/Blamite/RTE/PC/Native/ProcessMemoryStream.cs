@@ -1,4 +1,3 @@
-﻿#if WINDOWS
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -8,39 +7,14 @@ namespace Blamite.RTE.PC.Native
 {
 	/// <summary>
 	///     A Stream which reads/writes another process's memory.
+	///     Platform-specific implementations handle the actual memory access.
 	/// </summary>
-	public class ProcessMemoryStream : Stream
+	public abstract class ProcessMemoryStream : Stream
 	{
-		private readonly Process _process;
-		private readonly ProcessModule _processModule;
-
-		/// <summary>
-		///     Constructs a new ProcessMemoryStream that accesses the memory of a specified process. Uses <seealso cref="Process.MainModule"/> for <seealso cref="BaseModule"/>
-		/// </summary>
-		/// <param name="process">The process to access the memory of.</param>
-		public ProcessMemoryStream(Process process)
-		{
-			_process = process;
-			_processModule = process.MainModule;
-
-			Position = (long)_processModule.BaseAddress;
-		}
-
-		/// <summary>
-		///     Constructs a new ProcessMemoryStream that accesses the memory of a specified process. Uses <paramref name="module"/> for <seealso cref="BaseModule"/> unless null, then uses <seealso cref="Process.MainModule"/>
-		/// </summary>
-		/// <param name="process">The process to access the memory of.</param>
-		/// <param name="module">The process module to access the memory of (from the given process). Can be null, where <seealso cref="Process.MainModule"/> will be used for <seealso cref="BaseModule"/></param>
-		public ProcessMemoryStream(Process process, ProcessModule module)
-		{
-			_process = process;
-			if (module != null)
-				_processModule = module;
-			else
-				_processModule = process.MainModule;
-
-			Position = (long)_processModule.BaseAddress;
-		}
+		protected Process _process;
+		protected ProcessModule _processModule;
+		protected long _moduleBaseAddress;
+		protected int _moduleMemorySize;
 
 		/// <summary>
 		///     Gets the process that the stream operates on.
@@ -51,11 +25,27 @@ namespace Blamite.RTE.PC.Native
 		}
 
 		/// <summary>
-		///		Gets the module in the process that the stream operates on.
+		///     Gets the module in the process that the stream operates on. May be null on Linux.
 		/// </summary>
 		public ProcessModule BaseModule
 		{
 			get { return _processModule; }
+		}
+
+		/// <summary>
+		///     Gets the base address of the module in the process's memory space.
+		/// </summary>
+		public long ModuleBaseAddress
+		{
+			get { return _moduleBaseAddress; }
+		}
+
+		/// <summary>
+		///     Gets the memory size of the module.
+		/// </summary>
+		public int ModuleMemorySize
+		{
+			get { return _moduleMemorySize; }
 		}
 
 		public override bool CanRead
@@ -75,7 +65,7 @@ namespace Blamite.RTE.PC.Native
 
 		public override long Length
 		{
-			get { return BaseModule.ModuleMemorySize; }
+			get { return _moduleMemorySize; }
 		}
 
 		public override long Position { get; set; }
@@ -97,7 +87,7 @@ namespace Blamite.RTE.PC.Native
 					break;
 
 				case SeekOrigin.End:
-					Position = (long)BaseModule.BaseAddress + BaseModule.ModuleMemorySize - offset;
+					Position = _moduleBaseAddress + _moduleMemorySize - offset;
 					break;
 			}
 			return Position;
@@ -108,50 +98,31 @@ namespace Blamite.RTE.PC.Native
 			throw new NotSupportedException();
 		}
 
-		public override unsafe int Read(byte[] buffer, int offset, int count)
+		/// <summary>
+		///     Creates a ProcessMemoryStream appropriate for the current platform.
+		/// </summary>
+		/// <param name="process">The process to access the memory of.</param>
+		/// <param name="module">The process module to access. Can be null, where the main module will be used.</param>
+		/// <returns>A platform-specific ProcessMemoryStream.</returns>
+		public static ProcessMemoryStream Create(Process process, ProcessModule module = null)
 		{
-			UIntPtr bytesRead;
-
-			count = Math.Min(count, buffer.Length - offset); // Make sure we don't overflow the buffer
-			fixed (byte* pBuffer = buffer)
-			{
-				// This requires unsafe mode just to make the buffer operation faster
-				// Otherwise we have to duplicate it and slow everything down
-				// An alternative probably needs to be made in case a program doesn't want to use it...
-				ReadProcessMemory(_process.Handle, (IntPtr) Position, pBuffer + offset, (UIntPtr) count, out bytesRead);
-			}
-
-			Position += (long) bytesRead;
-			return (int) bytesRead;
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				return new WindowsProcessMemoryStream(process, module);
+			else
+				return new LinuxProcessMemoryStream(process, module);
 		}
 
-		public override unsafe void Write(byte[] buffer, int offset, int count)
+		/// <summary>
+		///     Creates a ProcessMemoryStream with an explicit base address (Linux only).
+		///     Used when ProcessModule is unavailable for Wine/Proton processes.
+		/// </summary>
+		/// <param name="process">The process to access the memory of.</param>
+		/// <param name="baseAddress">The base address of the module in the process's memory space.</param>
+		/// <param name="moduleSize">The size of the module in memory.</param>
+		/// <returns>A LinuxProcessMemoryStream.</returns>
+		public static ProcessMemoryStream Create(Process process, long baseAddress, int moduleSize)
 		{
-			UIntPtr bytesWritten;
-
-			count = Math.Min(count, buffer.Length - offset); // Make sure we don't read beyond the buffer
-			fixed (byte* pBuffer = buffer)
-			{
-				// This requires unsafe mode just to make the buffer operation faster
-				// Otherwise we have to duplicate it and slow everything down
-				// An alternative probably needs to be made in case a program doesn't want to use it...
-				WriteProcessMemory(_process.Handle, (IntPtr) Position, pBuffer + offset, (UIntPtr) count, out bytesWritten);
-			}
-
-			Position += (long) bytesWritten;
+			return new LinuxProcessMemoryStream(process, baseAddress, moduleSize);
 		}
-
-		#region Native Functions
-
-		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern unsafe bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte* lpBuffer,
-			UIntPtr nSize, out UIntPtr lpNumberOfBytesRead);
-
-		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern unsafe bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte* lpBuffer,
-			UIntPtr nSize, out UIntPtr lpNumberOfBytesWritten);
-
-		#endregion Native Functions
 	}
 }
-#endif

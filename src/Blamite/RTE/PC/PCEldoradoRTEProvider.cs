@@ -1,4 +1,3 @@
-﻿#if WINDOWS
 using Blamite.Blam;
 using Blamite.IO;
 using Blamite.RTE.PC.Native;
@@ -46,7 +45,7 @@ namespace Blamite.RTE.PC
 			if (gameProcess == null)
 				return null; //ErrorMessage was handled by above.
 
-			var gameMemory = new ProcessMemoryStream(gameProcess);
+			var gameMemory = CreateMemoryStream(gameProcess, null);
 
 			PokingInformation info;
 			if (gameProcess.MainModule.FileVersionInfo?.ProductVersion != null)
@@ -69,7 +68,7 @@ namespace Blamite.RTE.PC
 				return null;
 			}
 
-			_baseAddress = (long)gameMemory.BaseProcess.MainModule.BaseAddress;
+			_baseAddress = gameMemory.ModuleBaseAddress;
 			_lastTag = _baseAddress + info.LastTagIndexAddress.Value;
 			_indexArray = _baseAddress + info.IndexArrayPointer.Value;
 			_addressArray = _baseAddress + info.AddressArrayPointer.Value;
@@ -90,7 +89,7 @@ namespace Blamite.RTE.PC
 
 		public PokingInformation FindBuild(ProcessMemoryStream processStream, List<PokingInformation> collection)
 		{
-			long baseAddress = (long)processStream.BaseProcess.MainModule.BaseAddress;
+			long baseAddress = processStream.ModuleBaseAddress;
 
 			using (EndianReader reader = new EndianReader(processStream, BitConverter.IsLittleEndian ? Endian.LittleEndian : Endian.BigEndian))
 			{
@@ -144,4 +143,3 @@ namespace Blamite.RTE.PC
 		{ }
 	}
 }
-#endif

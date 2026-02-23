@@ -1,4 +1,3 @@
-﻿#if WINDOWS
 using Blamite.Blam;
 using Blamite.IO;
 using Blamite.RTE.PC.Native;
@@ -60,9 +59,9 @@ namespace Blamite.RTE.PC
 				return null;
 			}
 
-			ProcessMemoryStream gameMemory = new ProcessMemoryStream(gameProcess, gameModule);
+			ProcessMemoryStream gameMemory = CreateMemoryStream(gameProcess, gameModule);
 
-			_baseAddress = (long)gameMemory.BaseModule.BaseAddress;
+			_baseAddress = gameMemory.ModuleBaseAddress;
 			_mapHeaderAddress = _baseAddress + info.HeaderAddress.Value;
 			_mapMagicAddress = _baseAddress + info.MagicAddress.Value;
 
@@ -103,4 +102,3 @@ namespace Blamite.RTE.PC
 		}
 	}
 }
-#endif

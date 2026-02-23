@@ -302,7 +302,7 @@ namespace AssemblyAvalonia.Models.MetaData
 
 			if (tag != null)
 			{
-				field.Group = field.Tags.Groups.FirstOrDefault(c => c.RawGroup == tag.RawTag.Group);
+				field.Group = field.Tags.Groups.FirstOrDefault(c => c.TagGroupMagic == tag.GroupName);
 				field.Value = tag;
 			}
 			else

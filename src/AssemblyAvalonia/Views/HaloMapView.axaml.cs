@@ -131,6 +131,8 @@ public partial class HaloMapView : UserControl, IDisposable
 			g.Children = g.Children.OrderBy(e => e.TagFileName).ToList();
 
 		_allGroups = sortedGroups;
+		foreach (var g in sortedGroups)
+			_hierarchy.Groups.Add(g);
 
 		// Build header info
 		var headerValues = new List<HeaderValue>

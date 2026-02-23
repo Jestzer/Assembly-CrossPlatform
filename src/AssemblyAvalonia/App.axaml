@@ -129,26 +129,31 @@
       </Grid>
     </DataTemplate>
 
-    <!-- Tag Reference: searchable AutoCompleteBox -->
+    <!-- Tag Reference: group ComboBox + searchable tag AutoCompleteBox -->
     <DataTemplate DataType="meta:TagRefData">
-      <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+      <Grid ColumnDefinitions="200,75,*,80" Margin="0,1">
         <TextBlock Grid.Column="0" Text="{Binding DisplayName}" Foreground="{StaticResource FieldLabelBrush}" VerticalAlignment="Center" />
-        <AutoCompleteBox Grid.Column="1"
-                         ItemsSource="{Binding Tags.Entries}"
-                         SelectedItem="{Binding Value, Mode=TwoWay}"
-                         FilterMode="Contains"
-                         Watermark="Search tags..."
-                         Padding="4,2">
-          <AutoCompleteBox.ItemTemplate>
+        <ComboBox Grid.Column="1"
+                  ItemsSource="{Binding GroupsWithNull}"
+                  SelectedIndex="{Binding GroupIndex, Mode=TwoWay}"
+                  Padding="4,2" Margin="0,0,4,0" VerticalAlignment="Center">
+          <ComboBox.ItemTemplate>
             <DataTemplate>
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <TextBlock Text="{Binding GroupName}" Foreground="{StaticResource BlockHeaderBrush}" />
-                <TextBlock Text="{Binding TagFileName}" />
-              </StackPanel>
+              <TextBlock Text="{Binding TagGroupMagic}" />
             </DataTemplate>
-          </AutoCompleteBox.ItemTemplate>
-        </AutoCompleteBox>
-        <TextBlock Grid.Column="2" Text="tagref" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" VerticalAlignment="Center" />
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+        <ComboBox Grid.Column="2"
+                  ItemsSource="{Binding GroupEntries}"
+                  SelectedIndex="{Binding ValueIndex, Mode=TwoWay}"
+                  Padding="4,2" VerticalAlignment="Center">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding TagFileName}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBlock Grid.Column="3" Text="tagref" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" VerticalAlignment="Center" />
       </Grid>
     </DataTemplate>
 

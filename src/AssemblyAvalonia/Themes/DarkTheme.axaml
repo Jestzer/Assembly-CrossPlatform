@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Assembly dark palette (VS2012 Metro Dark aesthetic) -->
+  <Color x:Key="MainBackground">#FF2D2D30</Color>
+  <Color x:Key="SidebarBackground">#FF252526</Color>
+  <Color x:Key="SidebarBlock">#FF3F3F46</Color>
+  <Color x:Key="SidebarHeader">#FF2D2D30</Color>
+  <Color x:Key="AccentColor">#FF0079CB</Color>
+  <Color x:Key="AccentColorSecondary">#FF1D98EB</Color>
+  <Color x:Key="TextPrimary">#FFFFFFFF</Color>
+  <Color x:Key="TextSecondary">#FF989898</Color>
+  <Color x:Key="ActionHover">#FF3F3F41</Color>
+  <Color x:Key="Separator">#FF46464A</Color>
+
+  <!-- Brushes -->
+  <SolidColorBrush x:Key="MainBackgroundBrush" Color="{StaticResource MainBackground}" />
+  <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="{StaticResource SidebarBackground}" />
+  <SolidColorBrush x:Key="SidebarBlockBrush" Color="{StaticResource SidebarBlock}" />
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentBrushSecondary" Color="{StaticResource AccentColorSecondary}" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+  <SolidColorBrush x:Key="SeparatorBrush" Color="{StaticResource Separator}" />
+
+</ResourceDictionary>

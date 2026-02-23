@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>AssemblyAvalonia</RootNamespace>
+    <AssemblyName>AssemblyAvalonia</AssemblyName>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blamite\Blamite.csproj" />
+  </ItemGroup>
+
+  <!-- Copy Blamite Formats to output -->
+  <ItemGroup>
+    <None Include="..\Blamite\Formats\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          LinkBase="Formats" />
+  </ItemGroup>
+
+  <!-- Copy Assembly Plugins to output -->
+  <ItemGroup>
+    <None Include="..\Assembly\Plugins\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          LinkBase="Plugins" />
+  </ItemGroup>
+
+</Project>

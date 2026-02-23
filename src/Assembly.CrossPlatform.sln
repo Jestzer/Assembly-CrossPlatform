@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptWalkerApp", "ScriptWa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptTool", "ScriptTool\ScriptTool.csproj", "{D753CD70-0807-485D-8FAA-677DF75BF404}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyAvalonia", "AssemblyAvalonia\AssemblyAvalonia.csproj", "{65E68F3A-DC54-4124-8CED-F6DAE23E8947}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{D753CD70-0807-485D-8FAA-677DF75BF404}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D753CD70-0807-485D-8FAA-677DF75BF404}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D753CD70-0807-485D-8FAA-677DF75BF404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E68F3A-DC54-4124-8CED-F6DAE23E8947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E68F3A-DC54-4124-8CED-F6DAE23E8947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E68F3A-DC54-4124-8CED-F6DAE23E8947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E68F3A-DC54-4124-8CED-F6DAE23E8947}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

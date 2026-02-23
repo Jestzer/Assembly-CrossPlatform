@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:AssemblyAvalonia.Models"
+             x:Class="AssemblyAvalonia.Views.HaloMapView">
+
+  <Grid ColumnDefinitions="300,Auto,*">
+
+    <!-- Left sidebar: header info + tag tree -->
+    <DockPanel Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}">
+
+      <!-- Map info header -->
+      <Expander DockPanel.Dock="Top" Header="Map Information" IsExpanded="True" Margin="4">
+        <ItemsControl x:Name="HeaderList" Margin="4">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="Auto,*" Margin="0,1">
+                <TextBlock Grid.Column="0" Text="{Binding Title}" FontWeight="Bold"
+                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="1" Text="{Binding Data}"
+                           Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Expander>
+
+      <!-- Tag search -->
+      <TextBox x:Name="TagSearchBox" DockPanel.Dock="Top"
+               Watermark="Search tags..." Margin="4"
+               TextChanged="TagSearchBox_TextChanged" />
+
+      <!-- Tag tree -->
+      <TreeView x:Name="TagTree" Margin="4"
+                SelectionChanged="TagTree_SelectionChanged">
+        <TreeView.DataTemplates>
+          <!-- TagGroup shows magic + description, children expand -->
+          <TreeDataTemplate DataType="models:TagGroup" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="{Binding TagGroupMagic}" FontWeight="Bold" />
+              <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+          </TreeDataTemplate>
+          <!-- TagEntry is a leaf node -->
+          <DataTemplate DataType="models:TagEntry">
+            <TextBlock Text="{Binding TagFileName}" ToolTip.Tip="{Binding TagToolTip}" />
+          </DataTemplate>
+        </TreeView.DataTemplates>
+      </TreeView>
+    </DockPanel>
+
+    <!-- Splitter -->
+    <GridSplitter Grid.Column="1" Width="4" Background="{StaticResource SidebarBlockBrush}" />
+
+    <!-- Right content: meta editor area -->
+    <Border Grid.Column="2" Background="{StaticResource MainBackgroundBrush}">
+      <ContentControl x:Name="MetaContent">
+        <TextBlock Text="Select a tag to view its metadata."
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="16" />
+      </ContentControl>
+    </Border>
+
+  </Grid>
+
+</UserControl>

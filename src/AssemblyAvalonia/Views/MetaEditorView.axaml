@@ -1,0 +1,274 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:meta="clr-namespace:AssemblyAvalonia.Models.MetaData"
+             x:Class="AssemblyAvalonia.Views.MetaEditorView">
+
+  <UserControl.Resources>
+    <SolidColorBrush x:Key="FieldLabelBrush" Color="#FF989898" />
+    <SolidColorBrush x:Key="FieldValueBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FieldTypeBrush" Color="#FF6A9955" />
+    <SolidColorBrush x:Key="BlockHeaderBrush" Color="#FF0079CB" />
+  </UserControl.Resources>
+
+  <DockPanel>
+
+    <!-- Tag header -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource SidebarBackgroundBrush}"
+            Padding="8" Margin="0,0,0,2">
+      <TextBlock x:Name="TagHeader" FontSize="14" FontWeight="Bold"
+                 Foreground="{StaticResource TextPrimaryBrush}" />
+    </Border>
+
+    <!-- Plugin info -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource SidebarBackgroundBrush}"
+            Padding="8,4" Margin="0,0,0,4">
+      <TextBlock x:Name="PluginInfo" FontSize="11"
+                 Foreground="{StaticResource TextSecondaryBrush}" />
+    </Border>
+
+    <!-- Scrollable field list -->
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <ItemsControl x:Name="FieldList" Margin="4">
+        <ItemsControl.DataTemplates>
+
+          <!-- Comment -->
+          <DataTemplate DataType="meta:CommentData">
+            <Border Background="#FF1E1E1E" CornerRadius="3" Padding="8,4" Margin="0,2">
+              <StackPanel>
+                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13"
+                           Foreground="{StaticResource BlockHeaderBrush}" />
+                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="11"
+                           Foreground="{StaticResource FieldLabelBrush}"
+                           IsVisible="{Binding Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+
+          <!-- Numeric fields (uint8, int8, uint16, int16, uint32, int32, uint64, int64, float32) -->
+          <DataTemplate DataType="meta:Uint8Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="uint8" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Int8Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="int8" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Uint16Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="uint16" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Int16Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="int16" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Uint32Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="uint32" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Int32Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="int32" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Uint64Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="uint64" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Int64Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="int64" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+          <DataTemplate DataType="meta:Float32Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="float32" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- StringID -->
+          <DataTemplate DataType="meta:StringIDData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="stringid" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- String -->
+          <DataTemplate DataType="meta:StringData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="string" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Tag Reference -->
+          <DataTemplate DataType="meta:TagRefData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{Binding Group.TagGroupMagic}" Foreground="{StaticResource BlockHeaderBrush}" />
+                <TextBlock Text="{Binding Value.TagFileName}" Foreground="{StaticResource FieldValueBrush}" />
+              </StackPanel>
+              <TextBlock Grid.Column="2" Text="tagref" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Flags -->
+          <DataTemplate DataType="meta:FlagData">
+            <StackPanel Margin="0,2">
+              <Grid ColumnDefinitions="200,*,80">
+                <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+                <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Grid.Column="2" Text="flags" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+              </Grid>
+            </StackPanel>
+          </DataTemplate>
+
+          <!-- Enum -->
+          <DataTemplate DataType="meta:EnumData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding SelectedValue.Name}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="enum" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Color -->
+          <DataTemplate DataType="meta:ColorData">
+            <Grid ColumnDefinitions="200,Auto,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <Border Grid.Column="1" Width="20" Height="16" CornerRadius="2" Margin="0,0,8,0">
+                <Border.Background>
+                  <SolidColorBrush Color="{Binding Value}" />
+                </Border.Background>
+              </Border>
+              <TextBlock Grid.Column="2" Text="{Binding Value}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="3" Text="color" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Vector2 -->
+          <DataTemplate DataType="meta:Vector2Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding A, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding B, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+              </StackPanel>
+              <TextBlock Grid.Column="2" Text="vector2" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Vector3 -->
+          <DataTemplate DataType="meta:Vector3Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding A, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding B, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding C, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+              </StackPanel>
+              <TextBlock Grid.Column="2" Text="vector3" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Vector4 -->
+          <DataTemplate DataType="meta:Vector4Data">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding A, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding B, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding C, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding D, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+              </StackPanel>
+              <TextBlock Grid.Column="2" Text="vector4" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Degree -->
+          <DataTemplate DataType="meta:DegreeData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Value, StringFormat='{}{0:F4}'}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="degree" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- TagBlock (Reflexive) -->
+          <DataTemplate DataType="meta:TagBlockData">
+            <Expander IsExpanded="{Binding IsExpanded}" Margin="0,4">
+              <Expander.Header>
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{StaticResource BlockHeaderBrush}" />
+                    <TextBlock Foreground="{StaticResource FieldLabelBrush}" FontSize="11">
+                      <TextBlock.Text>
+                        <MultiBinding StringFormat="[{0} elements]">
+                          <Binding Path="Length" />
+                        </MultiBinding>
+                      </TextBlock.Text>
+                    </TextBlock>
+                  </StackPanel>
+                </Grid>
+              </Expander.Header>
+              <Border Background="#FF1A1A1D" CornerRadius="3" Padding="8,4" Margin="12,0,0,0">
+                <TextBlock Text="Tag block contents displayed when expanded."
+                           Foreground="{StaticResource FieldLabelBrush}" FontSize="11" />
+              </Border>
+            </Expander>
+          </DataTemplate>
+
+          <!-- RawData -->
+          <DataTemplate DataType="meta:RawData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding Length, StringFormat='({0} bytes)'}" Foreground="{StaticResource FieldValueBrush}" />
+              <TextBlock Grid.Column="2" Text="raw" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+          <!-- Datum -->
+          <DataTemplate DataType="meta:DatumData">
+            <Grid ColumnDefinitions="200,*,80" Margin="0,1">
+              <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource FieldLabelBrush}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding Salt, StringFormat='Salt: {0}'}" Foreground="{StaticResource FieldValueBrush}" />
+                <TextBlock Text="{Binding Index, StringFormat='Index: {0}'}" Foreground="{StaticResource FieldValueBrush}" />
+              </StackPanel>
+              <TextBlock Grid.Column="2" Text="datum" Foreground="{StaticResource FieldTypeBrush}" FontSize="11" />
+            </Grid>
+          </DataTemplate>
+
+        </ItemsControl.DataTemplates>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+
+</UserControl>

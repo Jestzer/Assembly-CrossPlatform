@@ -7,6 +7,8 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AssemblyAvalonia.Helpers;
 using Blamite.Compression;
+using Blamite.IO;
+using Blamite.Serialization;
 using Blamite.Serialization.Settings;
 
 namespace AssemblyAvalonia.Views;
@@ -63,9 +65,59 @@ public partial class MapCompressorView : UserControl
 	private void SetWorking(bool working)
 	{
 		_working = working;
-		BtnDoSingle.IsEnabled = !working;
+		BtnCompress.IsEnabled = !working && false;
+		BtnDecompress.IsEnabled = !working && false;
 		BtnBatchCompress.IsEnabled = !working;
 		BtnBatchDecompress.IsEnabled = !working;
+	}
+
+	private void SetSingleButtons(CompressionState state)
+	{
+		BtnCompress.IsEnabled = !_working && state == CompressionState.Decompressed;
+		BtnDecompress.IsEnabled = !_working && state == CompressionState.Compressed;
+	}
+
+	private void DetectState(string filePath)
+	{
+		Task.Run(() =>
+		{
+			try
+			{
+				EnsureEngineDb();
+				CompressionState state;
+				using (var fs = File.OpenRead(filePath))
+				{
+					var reader = new EndianReader(fs, Endian.LittleEndian);
+					state = CompressionManager.DetermineState(reader, AppState.EngineDb,
+						out EngineDescription _, out StructureValueCollection _);
+				}
+
+				string label = state switch
+				{
+					CompressionState.Compressed => "Status: Compressed",
+					CompressionState.Decompressed => "Status: Decompressed",
+					CompressionState.Null => "Status: No compression support",
+					CompressionState.NotSupported => "Status: Not supported",
+					_ => "Status: Unknown"
+				};
+
+				Dispatcher.UIThread.Post(() =>
+				{
+					StateLabel.Text = label;
+					SetSingleButtons(state);
+				});
+			}
+			catch (Exception ex)
+			{
+				Dispatcher.UIThread.Post(() =>
+				{
+					StateLabel.Text = "Status: Detection failed";
+					BtnCompress.IsEnabled = false;
+					BtnDecompress.IsEnabled = false;
+				});
+				AppendLog($"State detection error: {ex.Message}");
+			}
+		});
 	}
 
 	private static string DescribeResult(CompressionState result, string fileName)
@@ -103,11 +155,14 @@ public partial class MapCompressorView : UserControl
 		{
 			string? path = files[0].TryGetLocalPath();
 			if (path != null)
+			{
 				SingleFilePath.Text = path;
+				DetectState(path);
+			}
 		}
 	}
 
-	private void DoCompression_Click(object? sender, RoutedEventArgs e)
+	private void RunSingleCompression(CompressionState desiredState)
 	{
 		string filePath = SingleFilePath.Text?.Trim() ?? "";
 		if (!File.Exists(filePath))
@@ -118,16 +173,18 @@ public partial class MapCompressorView : UserControl
 
 		if (_working) return;
 		SetWorking(true);
+		StateLabel.Text = "Status: Processing...";
 
 		string fileName = Path.GetFileName(filePath);
-		AppendLog($"Processing {fileName}...");
+		string action = desiredState == CompressionState.Compressed ? "Compressing" : "Decompressing";
+		AppendLog($"{action} {fileName}...");
 
 		Task.Run(() =>
 		{
 			try
 			{
 				EnsureEngineDb();
-				var result = CompressionManager.HandleCompression(filePath, AppState.EngineDb);
+				var result = CompressionManager.HandleCompression(filePath, AppState.EngineDb, desiredState);
 				AppendLog(DescribeResult(result, fileName));
 			}
 			catch (Exception ex)
@@ -136,9 +193,25 @@ public partial class MapCompressorView : UserControl
 			}
 			finally
 			{
-				Dispatcher.UIThread.Post(() => SetWorking(false));
+				Dispatcher.UIThread.Post(() =>
+				{
+					_working = false;
+					BtnBatchCompress.IsEnabled = true;
+					BtnBatchDecompress.IsEnabled = true;
+					DetectState(filePath);
+				});
 			}
 		});
+	}
+
+	private void Compress_Click(object? sender, RoutedEventArgs e)
+	{
+		RunSingleCompression(CompressionState.Compressed);
+	}
+
+	private void Decompress_Click(object? sender, RoutedEventArgs e)
+	{
+		RunSingleCompression(CompressionState.Decompressed);
 	}
 
 	private void OpenMap_Click(object? sender, RoutedEventArgs e)
@@ -235,7 +308,16 @@ public partial class MapCompressorView : UserControl
 			}
 			finally
 			{
-				Dispatcher.UIThread.Post(() => SetWorking(false));
+				Dispatcher.UIThread.Post(() =>
+				{
+					_working = false;
+					BtnBatchCompress.IsEnabled = true;
+					BtnBatchDecompress.IsEnabled = true;
+					// Re-detect single file state if one is selected
+					string singlePath = SingleFilePath.Text?.Trim() ?? "";
+					if (File.Exists(singlePath))
+						DetectState(singlePath);
+				});
 			}
 		});
 	}

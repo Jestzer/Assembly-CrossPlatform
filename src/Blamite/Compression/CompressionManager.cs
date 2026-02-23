@@ -129,7 +129,7 @@ namespace Blamite.Compression
 			}
 		}
 
-		private static CompressionState DetermineState(IReader reader, EngineDatabase engineDb, out EngineDescription engineInfo, out StructureValueCollection headerValues)
+		public static CompressionState DetermineState(IReader reader, EngineDatabase engineDb, out EngineDescription engineInfo, out StructureValueCollection headerValues)
 		{
 			headerValues = null;
 			engineInfo = null;

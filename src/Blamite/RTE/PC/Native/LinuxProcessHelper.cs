@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Blamite.RTE.PC.Native
 {
@@ -18,10 +19,14 @@ namespace Blamite.RTE.PC.Native
 		///     Process.GetProcessesByName() to fail for long executable names like "MCC-Win64-Shipping".
 		/// </summary>
 		/// <param name="name">The executable name to search for (with or without extension).</param>
-		/// <returns>The first matching Process, or null if not found.</returns>
-		public static Process FindProcessByName(string name)
+		/// <param name="moduleName">Optional module name that must be present in /proc/[pid]/maps.
+		/// Under Proton, multiple processes (reaper, srt-bwrap, wine helpers) share the game
+		/// name in their cmdline; only the actual game process has the game DLL mapped.</param>
+		/// <returns>The matching Process, or null if not found.</returns>
+		public static Process FindProcessByName(string name, string moduleName = null)
 		{
 			string targetName = Path.GetFileNameWithoutExtension(name);
+			var matchingPids = new System.Collections.Generic.List<int>();
 
 			foreach (string pidDir in Directory.EnumerateDirectories("/proc"))
 			{
@@ -35,18 +40,15 @@ namespace Blamite.RTE.PC.Native
 					if (!File.Exists(cmdlinePath))
 						continue;
 
-					byte[] cmdlineBytes = File.ReadAllBytes(cmdlinePath);
-					if (cmdlineBytes.Length == 0)
+					// cmdline is null-delimited; under Proton, argv[0] is wine64,
+					// and the game executable appears as a later argument.
+					// Search the entire cmdline string for the target name.
+					string cmdline = File.ReadAllText(cmdlinePath);
+					if (cmdline.Length == 0)
 						continue;
 
-					// cmdline is null-delimited; argv[0] is the executable path
-					int firstNull = Array.IndexOf(cmdlineBytes, (byte)0);
-					int len = firstNull >= 0 ? firstNull : cmdlineBytes.Length;
-					string argv0 = System.Text.Encoding.UTF8.GetString(cmdlineBytes, 0, len);
-
-					string processName = Path.GetFileNameWithoutExtension(argv0);
-					if (string.Equals(processName, targetName, StringComparison.OrdinalIgnoreCase))
-						return Process.GetProcessById(pid);
+					if (cmdline.Contains(targetName, StringComparison.OrdinalIgnoreCase))
+						matchingPids.Add(pid);
 				}
 				catch (Exception)
 				{
@@ -55,7 +57,22 @@ namespace Blamite.RTE.PC.Native
 				}
 			}
 
-			return null;
+			if (matchingPids.Count == 0)
+				return null;
+
+			// If a module name is provided, prefer the process that has it mapped.
+			// Under Proton, only the actual game process will have the game DLL loaded.
+			if (!string.IsNullOrEmpty(moduleName))
+			{
+				foreach (int pid in matchingPids)
+				{
+					if (FindModuleBaseAddress(pid, moduleName) != 0)
+						return Process.GetProcessById(pid);
+				}
+			}
+
+			// Fallback: return the last (highest PID) match
+			return Process.GetProcessById(matchingPids[matchingPids.Count - 1]);
 		}
 
 		/// <summary>
@@ -83,8 +100,10 @@ namespace Blamite.RTE.PC.Native
 					if (string.IsNullOrWhiteSpace(line))
 						continue;
 
-					// Check if this line contains the module name (case-insensitive)
-					if (line.IndexOf(targetName, StringComparison.OrdinalIgnoreCase) < 0)
+					// Match module name as a filename (e.g., "halo3.dll" or "halo3.so"),
+					// not just as a substring (which could match directory names or
+					// unrelated files like "halo3fonts.dat").
+					if (!IsModuleMatch(line, targetName))
 						continue;
 
 					// Parse the start address (everything before the first dash)
@@ -103,6 +122,47 @@ namespace Blamite.RTE.PC.Native
 			}
 
 			return 0;
+		}
+
+		/// <summary>
+		///     Checks if a /proc/maps line contains a module matching the target name.
+		///     Matches "targetName.dll", "targetName.so", or "targetName.so.X" as a
+		///     filename component, preventing false matches on directory names or
+		///     unrelated files that happen to contain the target string.
+		/// </summary>
+		private static bool IsModuleMatch(string line, string targetName)
+		{
+			// First check if the line contains the target name at all (fast path)
+			int idx = line.IndexOf(targetName, StringComparison.OrdinalIgnoreCase);
+			if (idx < 0)
+				return false;
+
+			// Check each occurrence to see if it's a proper filename match
+			while (idx >= 0)
+			{
+				int afterName = idx + targetName.Length;
+				if (afterName < line.Length)
+				{
+					char nextChar = line[afterName];
+					// Must be followed by .dll, .so, or end of meaningful content
+					if (nextChar == '.')
+					{
+						string rest = line.Substring(afterName).TrimEnd();
+						if (rest.StartsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
+							rest.StartsWith(".so", StringComparison.OrdinalIgnoreCase))
+						{
+							// Also verify it's preceded by a path separator or start of path
+							if (idx == 0 || line[idx - 1] == '/' || line[idx - 1] == '\\')
+								return true;
+						}
+					}
+				}
+
+				// Search for next occurrence
+				idx = line.IndexOf(targetName, idx + 1, StringComparison.OrdinalIgnoreCase);
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -130,7 +190,7 @@ namespace Blamite.RTE.PC.Native
 					if (string.IsNullOrWhiteSpace(line))
 						continue;
 
-					if (line.IndexOf(targetName, StringComparison.OrdinalIgnoreCase) < 0)
+					if (!IsModuleMatch(line, targetName))
 						continue;
 
 					// Parse address range "start-end"
@@ -164,5 +224,35 @@ namespace Blamite.RTE.PC.Native
 
 			return 0;
 		}
+
+		/// <summary>
+		///     Tests if an address is readable in another process using process_vm_readv.
+		/// </summary>
+		/// <param name="pid">The process ID.</param>
+		/// <param name="address">The address to probe.</param>
+		/// <returns>True if 4 bytes can be read from the address.</returns>
+		public static unsafe bool ProbeAddress(int pid, long address)
+		{
+			byte[] buf = new byte[4];
+			fixed (byte* pBuf = buf)
+			{
+				var localIov = new Iovec { iov_base = (IntPtr)pBuf, iov_len = (IntPtr)4 };
+				var remoteIov = new Iovec { iov_base = (IntPtr)address, iov_len = (IntPtr)4 };
+				long result = process_vm_readv(pid, ref localIov, 1, ref remoteIov, 1, 0);
+				return result > 0;
+			}
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		private struct Iovec
+		{
+			public IntPtr iov_base;
+			public IntPtr iov_len;
+		}
+
+		[DllImport("libc", SetLastError = true)]
+		private static extern long process_vm_readv(
+			int pid, ref Iovec local_iov, ulong liovcnt,
+			ref Iovec remote_iov, ulong riovcnt, ulong flags);
 	}
 }

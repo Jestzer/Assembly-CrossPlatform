@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using Avalonia.Controls;
@@ -15,6 +14,7 @@ using AssemblyAvalonia.Plugins;
 using Blamite.Blam;
 using Blamite.IO;
 using Blamite.Plugins;
+using Blamite.RTE;
 using Blamite.Serialization;
 using Blamite.Util;
 
@@ -37,6 +37,7 @@ public partial class MetaEditorView : UserControl
 	private Trie _stringIdTrie;
 	private string _filePath;
 	private MainWindow _parentWindow;
+	private RTEProvider _rteProvider;
 	private int _baseSize;
 
 	public MetaEditorView()
@@ -45,7 +46,8 @@ public partial class MetaEditorView : UserControl
 	}
 
 	public void LoadTag(TagEntry tag, ICacheFile cacheFile, EngineDescription buildInfo,
-		string filePath, TagHierarchy hierarchy, Trie stringIdTrie, MainWindow parentWindow)
+		string filePath, TagHierarchy hierarchy, Trie stringIdTrie, MainWindow parentWindow,
+		RTEProvider rteProvider = null)
 	{
 		_tag = tag;
 		_cacheFile = cacheFile;
@@ -53,6 +55,7 @@ public partial class MetaEditorView : UserControl
 		_filePath = filePath;
 		_stringIdTrie = stringIdTrie;
 		_parentWindow = parentWindow;
+		_rteProvider = rteProvider;
 
 		string groupMagic = CharConstant.ToString(tag.RawTag.Group.Magic);
 		TagHeader.Text = $"{tag.TagFileName}.{groupMagic}";
@@ -136,6 +139,11 @@ public partial class MetaEditorView : UserControl
 
 			SaveButton.IsVisible = true;
 			HexToggle.IsVisible = true;
+			if (_rteProvider != null)
+			{
+				PokeButton.IsVisible = true;
+				RefreshMemButton.IsVisible = true;
+			}
 		}
 		catch (Exception ex)
 		{
@@ -167,6 +175,81 @@ public partial class MetaEditorView : UserControl
 		catch (Exception ex)
 		{
 			_parentWindow?.SetStatus($"Save failed: {ex.Message}");
+		}
+	}
+
+	private void Poke_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_rteProvider == null || _pluginVisitor == null || _cacheFile == null)
+			return;
+
+		try
+		{
+			using (IStream metaStream = _rteProvider.GetCacheStream(_cacheFile, _tag.RawTag))
+			{
+				if (metaStream != null)
+				{
+					// Verify we can read from the tag's location before writing
+					try
+					{
+						long tagPtr = _tag.RawTag.MetaLocation.AsPointer();
+						metaStream.SeekTo(tagPtr);
+						((IReader)metaStream).ReadUInt32();
+					}
+					catch (Exception readEx)
+					{
+						string diag = "";
+						if (_rteProvider is Blamite.RTE.PC.PCRTEProvider pcProvider)
+						{
+							diag = $" | PID={pcProvider.LastGamePid}" +
+								$" mod=0x{pcProvider.ModuleBaseAddress:X}" +
+								$" cache=0x{pcProvider.CurrentCacheAddress:X}" +
+								$" vBase=0x{(_cacheFile.MetaArea?.BasePointer ?? 0):X}";
+						}
+						_parentWindow?.SetStatus($"Poke failed: cannot read tag memory ({readEx.Message}){diag}");
+						return;
+					}
+
+					// Write changed fields to game memory
+					var metaWriter = new MetaWriter(
+						metaStream,
+						_tag.RawTag.MetaLocation.AsPointer(),
+						_cacheFile, _buildInfo,
+						MetaWriter.SaveType.Memory,
+						_fileChanges,
+						_stringIdTrie, _srcSegmentGroup);
+					metaWriter.WriteFields(_pluginVisitor.Values);
+					_parentWindow?.SetStatus("Changes poked to game memory.");
+				}
+				else
+				{
+					_parentWindow?.SetStatus($"Poke failed: {_rteProvider.ErrorMessage}");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			_parentWindow?.SetStatus($"Poke failed: {ex.Message}");
+		}
+	}
+
+	private void RefreshFromMemory_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_rteProvider == null || _pluginVisitor == null || _cacheFile == null)
+			return;
+
+		try
+		{
+			var rteStreamManager = new RTEStreamManager(_rteProvider, _cacheFile, _tag.RawTag);
+			long basePointer = _tag.RawTag.MetaLocation.AsPointer();
+			var metaReader = new MetaReader(rteStreamManager, basePointer, _cacheFile,
+				_buildInfo, MetaReader.LoadType.Memory, _fileChanges, _srcSegmentGroup);
+			metaReader.ReadFields(_pluginVisitor.Values);
+			_parentWindow?.SetStatus("Refreshed from game memory.");
+		}
+		catch (Exception ex)
+		{
+			_parentWindow?.SetStatus($"Refresh failed: {ex.Message}");
 		}
 	}
 

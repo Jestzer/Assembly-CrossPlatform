@@ -15,6 +15,7 @@ namespace Blamite.RTE.PC
 		protected long _baseAddress;
 		protected long _mapHeaderAddress;
 		protected long _mapMagicAddress;
+		protected int _lastGamePid;
 
 		public PCRTEProvider(EngineDescription engine) : base(engine)
 		{
@@ -24,6 +25,16 @@ namespace Blamite.RTE.PC
 		///     Gets the address of the cache for the currently-loaded (non-shared) map.
 		/// </summary>
 		public long CurrentCacheAddress { get; internal set; }
+
+		/// <summary>
+		///     Gets the base address of the game module used for the last connection.
+		/// </summary>
+		public long ModuleBaseAddress => _baseAddress;
+
+		/// <summary>
+		///     Gets the PID of the game process used for the last connection.
+		/// </summary>
+		public int LastGamePid => _lastGamePid;
 
 		/// <summary>
 		///     Gets the type of the map that is currently loaded.
@@ -134,13 +145,19 @@ namespace Blamite.RTE.PC
 		{
 			Process result = FindGameProcessByName(_buildInfo.PokingExecutable);
 			if (result != null)
+			{
+				_lastGamePid = result.Id;
 				return result;
+			}
 
 			if (!string.IsNullOrEmpty(_buildInfo.PokingExecutableAlt))
 			{
 				result = FindGameProcessByName(_buildInfo.PokingExecutableAlt);
 				if (result != null)
+				{
+					_lastGamePid = result.Id;
 					return result;
+				}
 				else
 				{
 					ErrorMessage = "Game process \"" + _buildInfo.PokingExecutable + "\" (or \"" + _buildInfo.PokingExecutableAlt + "\") does not appear to be running.";
@@ -157,9 +174,11 @@ namespace Blamite.RTE.PC
 		private Process FindGameProcessByName(string name)
 		{
 			// On Linux, use /proc/cmdline scanning to avoid 15-char truncation
-			// issues with Wine/Proton process names
+			// issues with Wine/Proton process names.
+			// Pass PokingModule so that among multiple matching processes (reaper,
+			// srt-bwrap, wine helpers), we prefer the one with the game DLL mapped.
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				return LinuxProcessHelper.FindProcessByName(name);
+				return LinuxProcessHelper.FindProcessByName(name, _buildInfo.PokingModule);
 
 			Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(name));
 

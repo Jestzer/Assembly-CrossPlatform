@@ -9,6 +9,8 @@ using AssemblyAvalonia.Helpers;
 using AssemblyAvalonia.Models;
 using Blamite.Blam;
 using Blamite.IO;
+using Blamite.RTE;
+using Blamite.RTE.PC;
 using Blamite.Serialization;
 using Blamite.Serialization.Settings;
 using Blamite.Util;
@@ -26,6 +28,7 @@ public partial class HaloMapView : UserControl, IDisposable
 	private List<TagGroup> _allGroups;
 	private EndianReader _reader;
 	private Stream _fileStream;
+	private RTEProvider _rteProvider;
 
 	public HaloMapView()
 	{
@@ -85,6 +88,24 @@ public partial class HaloMapView : UserControl, IDisposable
 
 		// Load cache file (endianness is corrected inside based on engine)
 		_cacheFile = CacheFileLoader.LoadCacheFile(_reader, _filePath, AppState.EngineDb, out _buildInfo);
+
+		// Create RTE provider for poking if supported
+		if (_buildInfo.PokingPlatform == RTEConnectionType.LocalProcess32 ||
+			_buildInfo.PokingPlatform == RTEConnectionType.LocalProcess64)
+		{
+			switch (_cacheFile.Engine)
+			{
+				case EngineType.FirstGeneration:
+					_rteProvider = new PCFirstGenRTEProvider(_buildInfo);
+					break;
+				case EngineType.SecondGeneration:
+					_rteProvider = new PCSecondGenRTEProvider(_buildInfo);
+					break;
+				case EngineType.ThirdGeneration:
+					_rteProvider = new PCThirdGenRTEProvider(_buildInfo);
+					break;
+			}
+		}
 
 		// Build string ID trie
 		_stringIdTrie = new Trie();
@@ -212,7 +233,7 @@ public partial class HaloMapView : UserControl, IDisposable
 			_parentWindow.SetStatus($"Loading tag: [{entry.GroupName}] {entry.TagFileName}...");
 
 			var metaEditor = new MetaEditorView();
-			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow);
+			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
 			MetaContent.Content = metaEditor;
 
 			_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");

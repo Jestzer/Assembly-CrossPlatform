@@ -4,6 +4,7 @@ using Blamite.RTE.PC.Native;
 using Blamite.Serialization;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Blamite.RTE.PC
 {
@@ -87,6 +88,19 @@ namespace Blamite.RTE.PC
 			ReadInformation(reader, _buildInfo);
 
 			long memoryAddress = CurrentCacheAddress;
+
+			// On Linux/Proton, the poking XML offsets may be wrong for the installed
+			// game version (the version can't be detected under Wine). If the cache
+			// address from the magicAddress offset isn't accessible, scan the module
+			// data near the headerAddress for the correct pointer.
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+				memoryAddress != 0 && !IsAddressReadable(gameProcess.Id, memoryAddress))
+			{
+				long recovered = ScanForCacheAddress(gameProcess.Id, reader);
+				if (recovered != 0)
+					memoryAddress = CurrentCacheAddress = recovered;
+			}
+
 			if (cacheFile != null && CurrentMapName != cacheFile.InternalName)
 			{
 				gameMemory.Close();
@@ -103,8 +117,86 @@ namespace Blamite.RTE.PC
 				return null;
 			}
 
-			OffsetStream gameStream = new OffsetStream(gameMemory, memoryAddress);
+			// Adjust offset so virtual pointers from the cache file map to correct
+			// process memory addresses. memoryAddress is where the meta data lives
+			// in the game process, and MetaArea.BasePointer is the virtual base the
+			// cache file uses for its pointers. The delta translates between them.
+			long streamOffset = memoryAddress;
+			if (cacheFile != null && cacheFile.MetaArea != null)
+				streamOffset = memoryAddress - cacheFile.MetaArea.BasePointer;
+
+			OffsetStream gameStream = new OffsetStream(gameMemory, streamOffset);
 			return new EndianStream(gameStream, BitConverter.IsLittleEndian ? Endian.LittleEndian : Endian.BigEndian);
+		}
+
+		/// <summary>
+		///     Scans module data near the header address for an 8-byte pointer that
+		///     points to readable process memory. When the poking XML's magicAddress
+		///     is wrong (e.g., game version mismatch on Linux/Proton), the correct
+		///     pointer is typically within a few hundred bytes of the header address.
+		/// </summary>
+		private long ScanForCacheAddress(int pid, IReader reader)
+		{
+			// Scan ±4KB around the header address. The magic pointer is typically
+			// very close to the header (e.g., 0x10 bytes before it).
+			long scanStart = _mapHeaderAddress - 0x1000;
+			long scanEnd = _mapHeaderAddress + 0x1000;
+			long bestCandidate = 0;
+			long bestDistance = long.MaxValue;
+
+			for (long addr = scanStart; addr < scanEnd; addr += 8)
+			{
+				try
+				{
+					reader.SeekTo(addr);
+					long val = reader.ReadInt64();
+
+					// Must look like a valid 64-bit user-space address (high range)
+					if (val <= 0x10000 || val > 0x7FFFFFFFFFFF)
+						continue;
+
+					// Must be page-aligned (cache allocations always are)
+					if ((val & 0xFFF) != 0)
+						continue;
+
+					// Must be readable in the target process
+					if (!IsAddressReadable(pid, val))
+						continue;
+
+					// Prefer the candidate closest to the header
+					long distance = Math.Abs(addr - _mapHeaderAddress);
+					if (distance < bestDistance)
+					{
+						bestDistance = distance;
+						bestCandidate = val;
+					}
+				}
+				catch
+				{
+					// Skip unreadable addresses in the module
+				}
+			}
+
+			return bestCandidate;
+		}
+
+		/// <summary>
+		///     Tests if an address is readable in a process via process_vm_readv.
+		/// </summary>
+		private static bool IsAddressReadable(int pid, long address)
+		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				try
+				{
+					return LinuxProcessHelper.ProbeAddress(pid, address);
+				}
+				catch
+				{
+					return false;
+				}
+			}
+			return true; // On Windows, assume readable (errors caught by caller)
 		}
 
 		protected override void ReadMapPointers32(IReader reader)

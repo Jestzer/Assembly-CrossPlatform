@@ -1,31 +1,54 @@
-# Assembly
+# Assembly Crossplatform
 
-### Multi-Generation Blam Engine Research Tool ###
+### Cross-platform Halo Map Editor
 
-__An Xbox/Xbox 360 console capable of running unsigned code is required, for console-based games, in order to use modifications created with Assembly. Flashed disc drives will not work.__
+Assembly Crossplatform is a free, open-source Halo map file (.map) editor built with [Avalonia UI](https://avaloniaui.net/) for Windows, Linux, and macOS. It is a cross-platform port of the original [Assembly](https://github.com/XboxChaos/Assembly) by Xbox Chaos, rewritten to run natively on all major desktop platforms.
 
-__An Xbox/Xbox 360 console capable of running a dev kernel is required, for console-based games on their intended platform, in order to modify or interact with a game or console in real time (poking) with Assembly.__
+## Features
 
-Assembly is a free, open-source Halo cache file (.map) editor that was built from the ground up. It allows users to create and distribute creative patches for game content.
+* **Cross-platform** - Runs on Windows, Linux, and macOS using .NET 8 and Avalonia UI
+* **Multi-generation support** - Opens cache files for Halo CE, Halo 2, Halo 3, Halo: Reach, Halo 4, and Halo MCC
+* **Tag editing** - Browse and edit tag metadata with a searchable field editor, hex viewer, and real-time memory poking
+* **Tag swapping** - Swap tags between datum indices directly from the editor
+* **Map compression** - Compress and decompress map files (supports multiple Halo engine formats)
+* **Real-time editing (RTE)** - Poke changes directly to game memory on supported engines
 
-Assembly was designed with three goals in mind: 
+## Downloading
 
-* __Flexibility__ - Assembly is capable of opening files targeted for Halo 1, Halo 2, Halo 3, Halo: Reach, and Halo 4, and Halo MCC. And includes a system which allows users to add in support for other formats with ease.
-* __Speed__ - Spend more time researching and less time waiting for trivial tasks to complete. Even the largest tags load extremely quickly with invisible fields enabled, and the meta editor's search feature allows users to find values with ease.
-* __Usability__ - Built using Windows Presentation Foundation and utilizing modern UI design concepts, Assembly is both easy to use and easy to look at.
+Precompiled builds for Windows and Linux are available on the [Releases](https://github.com/Jestzer/Assembly-CrossPlatform/releases) page.
 
-## Downloading ##
+## Building from Source
 
-Stable releases are made available through [GitHub's release system](https://github.com/XboxChaos/Assembly/releases).
+### Requirements
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-## Precompiled Builds ##
+### Build
+```bash
+dotnet build src/AssemblyAvalonia/AssemblyAvalonia.csproj
+```
 
-At this time precompiled builds should not be shared unless by a [team member](https://github.com/orgs/XboxChaos/people).
+### Run
+```bash
+dotnet run --project src/AssemblyAvalonia/AssemblyAvalonia.csproj
+```
 
-## Compiling ##
+### Publish (self-contained)
+```bash
+# Linux
+dotnet publish src/AssemblyAvalonia/AssemblyAvalonia.csproj -c Release -r linux-x64 --self-contained
 
-See [Compiling Assembly from Source](https://github.com/XboxChaos/Assembly/wiki/Compiling-from-Source).
+# Windows
+dotnet publish src/AssemblyAvalonia/AssemblyAvalonia.csproj -c Release -r win-x64 --self-contained
+```
 
-## Bug Reports ##
+## Bug Reports
 
-Assembly isn't perfect. If you encounter any issues, you are encouraged to submit bug reports through our [issue tracker](https://github.com/XboxChaos/Assembly/issues/new). Please make your reports as detailed as possible. Be sure to include any exception messages you get (if any), what map the error occurred on, and give steps showing how we can reproduce the behavior you encountered.
+If you encounter any issues, please submit bug reports through the [issue tracker](https://github.com/Jestzer/Assembly-CrossPlatform/issues/new). Include any error messages, what map the error occurred on, and steps to reproduce the issue.
+
+## License
+
+Licensed under GPL-3.0. See [LICENSE](LICENSE) for details.
+
+## Credits
+
+This cross-platform port builds on the original Assembly by the Xbox Chaos community. See the About window in the application for full credits.

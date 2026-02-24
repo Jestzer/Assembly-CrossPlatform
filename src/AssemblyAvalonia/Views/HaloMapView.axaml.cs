@@ -31,6 +31,11 @@ public partial class HaloMapView : UserControl, IDisposable
 	private Stream _fileStream;
 	private RTEProvider _rteProvider;
 
+	// Cached lowercase names for fast search
+	private Dictionary<TagGroup, string> _lowerGroupMagic;
+	private Dictionary<TagGroup, string> _lowerGroupDesc;
+	private Dictionary<TagEntry, string> _lowerTagNames;
+
 	public HaloMapView()
 	{
 		InitializeComponent();
@@ -156,6 +161,18 @@ public partial class HaloMapView : UserControl, IDisposable
 		foreach (var g in sortedGroups)
 			_hierarchy.Groups.Add(g);
 
+		// Build lowercase name caches for fast search
+		_lowerGroupMagic = new Dictionary<TagGroup, string>(sortedGroups.Count);
+		_lowerGroupDesc = new Dictionary<TagGroup, string>(sortedGroups.Count);
+		_lowerTagNames = new Dictionary<TagEntry, string>();
+		foreach (var g in sortedGroups)
+		{
+			_lowerGroupMagic[g] = g.TagGroupMagic.ToLowerInvariant();
+			_lowerGroupDesc[g] = g.Description?.ToLowerInvariant() ?? "";
+			foreach (var child in g.Children)
+				_lowerTagNames[child] = child.TagFileName.ToLowerInvariant();
+		}
+
 		// Build header info
 		string mapName = MapNameLookup.GetMapName(_cacheFile.InternalName, _buildInfo.Name);
 		var headerValues = new List<HeaderValue>
@@ -205,8 +222,8 @@ public partial class HaloMapView : UserControl, IDisposable
 
 		foreach (var group in _allGroups)
 		{
-			bool groupMatches = group.TagGroupMagic.ToLowerInvariant().Contains(lowerFilter) ||
-								(group.Description?.ToLowerInvariant().Contains(lowerFilter) ?? false);
+			bool groupMatches = _lowerGroupMagic[group].Contains(lowerFilter) ||
+								_lowerGroupDesc[group].Contains(lowerFilter);
 
 			if (groupMatches)
 			{
@@ -214,9 +231,12 @@ public partial class HaloMapView : UserControl, IDisposable
 			}
 			else
 			{
-				var matchingChildren = group.Children
-					.Where(c => c.TagFileName.ToLowerInvariant().Contains(lowerFilter))
-					.ToList();
+				var matchingChildren = new List<TagEntry>();
+				foreach (var child in group.Children)
+				{
+					if (_lowerTagNames[child].Contains(lowerFilter))
+						matchingChildren.Add(child);
+				}
 
 				if (matchingChildren.Count > 0)
 				{
@@ -247,10 +267,13 @@ public partial class HaloMapView : UserControl, IDisposable
 			SwapTagCombo.ItemsSource = null;
 
 			var metaEditor = new MetaEditorView();
+			metaEditor.OnLoadComplete = (success, error) =>
+			{
+				if (success)
+					_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");
+			};
 			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
 			MetaContent.Content = metaEditor;
-
-			_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");
 		}
 	}
 

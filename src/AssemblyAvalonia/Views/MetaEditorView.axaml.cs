@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using AssemblyAvalonia.Helpers;
 using AssemblyAvalonia.Models;
 using AssemblyAvalonia.Models.MetaData;
@@ -40,9 +43,43 @@ public partial class MetaEditorView : UserControl
 	private RTEProvider _rteProvider;
 	private int _baseSize;
 
+	// Cache resolved plugin paths to avoid repeated File.Exists checks
+	private static readonly ConcurrentDictionary<string, string> _pluginPathCache = new();
+
 	public MetaEditorView()
 	{
 		InitializeComponent();
+	}
+
+	/// <summary>
+	///     Called when the tag load completes (success or failure).
+	///     Set by the caller so it can update status text, etc.
+	/// </summary>
+	public Action<bool, string> OnLoadComplete { get; set; }
+
+	private static string ResolvePluginPath(string groupMagic, EngineDescription buildInfo)
+	{
+		string cacheKey = $"{buildInfo.Name}:{groupMagic}";
+		if (_pluginPathCache.TryGetValue(cacheKey, out string cached))
+			return cached;
+
+		string pluginsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+		string enginePluginDir = buildInfo.Settings.GetSetting<string>("plugins");
+		string pluginPath = Path.Combine(pluginsDir, enginePluginDir,
+			VariousFunctions.SterilizeTagGroupName(groupMagic).Trim() + ".xml");
+
+		if (!File.Exists(pluginPath) && buildInfo.Settings.PathExists("fallbackPlugins"))
+		{
+			string fallback = buildInfo.Settings.GetSetting<string>("fallbackPlugins");
+			pluginPath = Path.Combine(pluginsDir, fallback,
+				VariousFunctions.SterilizeTagGroupName(groupMagic).Trim() + ".xml");
+		}
+
+		if (!File.Exists(pluginPath))
+			pluginPath = null;
+
+		_pluginPathCache[cacheKey] = pluginPath;
+		return pluginPath;
 	}
 
 	public void LoadTag(TagEntry tag, ICacheFile cacheFile, EngineDescription buildInfo,
@@ -63,92 +100,116 @@ public partial class MetaEditorView : UserControl
 		if (tag.RawTag.MetaLocation == null)
 		{
 			PluginInfo.Text = "This tag has no metadata (shared cache reference).";
+			OnLoadComplete?.Invoke(true, null);
 			return;
 		}
 
 		_srcSegmentGroup = tag.RawTag.MetaLocation.BaseGroup;
 
-		// Find plugin XML
-		string pluginsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-		string enginePluginDir = buildInfo.Settings.GetSetting<string>("plugins");
-		string pluginPath = Path.Combine(pluginsDir, enginePluginDir,
-			VariousFunctions.SterilizeTagGroupName(groupMagic).Trim() + ".xml");
+		// Immediate UI feedback
+		PluginInfo.Text = "Loading...";
+		SaveButton.IsVisible = false;
+		HexToggle.IsVisible = false;
+		PokeButton.IsVisible = false;
+		RefreshMemButton.IsVisible = false;
 
-		// Try fallback plugin directory
-		if (!File.Exists(pluginPath) && buildInfo.Settings.PathExists("fallbackPlugins"))
+		// Capture values for background thread
+		var segmentGroup = _srcSegmentGroup;
+		long baseOffset = (uint)tag.RawTag.MetaLocation.AsOffset();
+		bool alwaysBasicColor = buildInfo.Engine < EngineType.ThirdGeneration;
+
+		Task.Run(() =>
 		{
-			string fallback = buildInfo.Settings.GetSetting<string>("fallbackPlugins");
-			pluginPath = Path.Combine(pluginsDir, fallback,
-				VariousFunctions.SterilizeTagGroupName(groupMagic).Trim() + ".xml");
-		}
-
-		if (!File.Exists(pluginPath))
-		{
-			PluginInfo.Text = $"No plugin found for '{groupMagic}'.";
-			return;
-		}
-
-		try
-		{
-			bool alwaysBasicColor = buildInfo.Engine < EngineType.ThirdGeneration;
-			var tagCommandState = TagDataCommandState.None;
-
-			// Load plugin
-			using (var xml = XmlReader.Create(pluginPath))
+			try
 			{
-				_pluginVisitor = new AssemblyPluginVisitor(
-					hierarchy, stringIdTrie, _srcSegmentGroup,
-					AppState.Settings.PluginsShowInvisibles,
-					tagCommandState, alwaysBasicColor);
-				AssemblyPluginLoader.LoadPlugin(xml, _pluginVisitor);
-			}
+				// Resolve plugin path (cached)
+				string pluginPath = ResolvePluginPath(groupMagic, buildInfo);
+				if (pluginPath == null)
+				{
+					Dispatcher.UIThread.Post(() =>
+					{
+						PluginInfo.Text = $"No plugin found for '{groupMagic}'.";
+						OnLoadComplete?.Invoke(true, null);
+					});
+					return;
+				}
 
-			// Show plugin info
-			if (_pluginVisitor.PluginRevisions.Count > 0)
+				// Parse plugin XML
+				var tagCommandState = TagDataCommandState.None;
+				AssemblyPluginVisitor pluginVisitor;
+				using (var xml = XmlReader.Create(pluginPath))
+				{
+					pluginVisitor = new AssemblyPluginVisitor(
+						hierarchy, stringIdTrie, segmentGroup,
+						AppState.Settings.PluginsShowInvisibles,
+						tagCommandState, alwaysBasicColor);
+					AssemblyPluginLoader.LoadPlugin(xml, pluginVisitor);
+				}
+
+				// Build plugin info text
+				string pluginInfoText;
+				if (pluginVisitor.PluginRevisions.Count > 0)
+				{
+					var latest = pluginVisitor.PluginRevisions[pluginVisitor.PluginRevisions.Count - 1];
+					pluginInfoText = $"Plugin: {groupMagic}.xml | {pluginVisitor.Values.Count} fields | Last revised by {latest.Researcher}";
+				}
+				else
+				{
+					pluginInfoText = $"Plugin: {groupMagic}.xml | {pluginVisitor.Values.Count} fields";
+				}
+
+				// Read field values from file
+				var fileStreamManager = new FileStreamManager(filePath, buildInfo.Endian);
+				var fileChanges = new FieldChangeSet();
+				var metaReader = new MetaReader(fileStreamManager, baseOffset, cacheFile,
+					buildInfo, MetaReader.LoadType.File, fileChanges, segmentGroup);
+
+				// Flatten tag blocks and read values
+				var changeTracker = new FieldChangeTracker();
+				var flattener = new TagBlockFlattener(metaReader, changeTracker, fileChanges);
+				flattener.Flatten(pluginVisitor.Values);
+				metaReader.ReadFields(pluginVisitor.Values);
+
+				// Wire up change tracking
+				changeTracker.RegisterChangeSet(fileChanges);
+				changeTracker.Attach(pluginVisitor.Values);
+
+				int baseSize = pluginVisitor.BaseSize;
+				var fields = pluginVisitor.Values;
+
+				// Update UI on dispatcher thread
+				Dispatcher.UIThread.Post(() =>
+				{
+					_pluginVisitor = pluginVisitor;
+					_fileChanges = fileChanges;
+					_changeTracker = changeTracker;
+					_flattener = flattener;
+					_fields = fields;
+					_baseSize = baseSize;
+
+					PluginInfo.Text = pluginInfoText;
+					FieldList.ItemsSource = _fields;
+
+					SaveButton.IsVisible = true;
+					HexToggle.IsVisible = true;
+					if (_rteProvider != null)
+					{
+						PokeButton.IsVisible = true;
+						RefreshMemButton.IsVisible = true;
+					}
+
+					OnLoadComplete?.Invoke(true, null);
+				});
+			}
+			catch (Exception ex)
 			{
-				var latest = _pluginVisitor.PluginRevisions[_pluginVisitor.PluginRevisions.Count - 1];
-				PluginInfo.Text = $"Plugin: {groupMagic}.xml | {_pluginVisitor.Values.Count} fields | Last revised by {latest.Researcher}";
+				Dispatcher.UIThread.Post(() =>
+				{
+					PluginInfo.Text = $"Error loading metadata: {ex.Message}";
+					OnLoadComplete?.Invoke(false, ex.Message);
+				});
 			}
-			else
-			{
-				PluginInfo.Text = $"Plugin: {groupMagic}.xml | {_pluginVisitor.Values.Count} fields";
-			}
-
-			// Read field values from file
-			long baseOffset = (uint)tag.RawTag.MetaLocation.AsOffset();
-			var fileStreamManager = new FileStreamManager(filePath, buildInfo.Endian);
-			_fileChanges = new FieldChangeSet();
-			var metaReader = new MetaReader(fileStreamManager, baseOffset, cacheFile,
-				buildInfo, MetaReader.LoadType.File, _fileChanges, _srcSegmentGroup);
-
-			// Flatten tag blocks and read values
-			_changeTracker = new FieldChangeTracker();
-			_flattener = new TagBlockFlattener(metaReader, _changeTracker, _fileChanges);
-			_flattener.Flatten(_pluginVisitor.Values);
-
-			metaReader.ReadFields(_pluginVisitor.Values);
-
-			// Wire up change tracking
-			_changeTracker.RegisterChangeSet(_fileChanges);
-			_changeTracker.Attach(_pluginVisitor.Values);
-
-			// Display fields
-			_fields = _pluginVisitor.Values;
-			_baseSize = _pluginVisitor.BaseSize;
-			FieldList.ItemsSource = _fields;
-
-			SaveButton.IsVisible = true;
-			HexToggle.IsVisible = true;
-			if (_rteProvider != null)
-			{
-				PokeButton.IsVisible = true;
-				RefreshMemButton.IsVisible = true;
-			}
-		}
-		catch (Exception ex)
-		{
-			PluginInfo.Text = $"Error loading metadata: {ex.Message}";
-		}
+		});
 	}
 
 	private void Save_Click(object? sender, RoutedEventArgs e)

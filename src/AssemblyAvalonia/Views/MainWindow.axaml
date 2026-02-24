@@ -31,10 +31,11 @@
                            Foreground="White" VerticalAlignment="Center" Margin="8,0" FontSize="12" />
     </Border>
 
-    <!-- Tab Control -->
-    <TabControl x:Name="DocumentTabs" Margin="0">
-      <!-- Tabs are added programmatically -->
-    </TabControl>
+    <!-- Welcome screen and Tab Control share the same space -->
+    <Grid>
+      <ContentControl x:Name="WelcomeContent" />
+      <TabControl x:Name="DocumentTabs" Margin="0" IsVisible="False" />
+    </Grid>
 
   </DockPanel>
 

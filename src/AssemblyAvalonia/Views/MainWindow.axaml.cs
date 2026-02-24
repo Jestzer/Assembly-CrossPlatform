@@ -10,10 +10,25 @@ namespace AssemblyAvalonia.Views;
 
 public partial class MainWindow : Window
 {
+	private WelcomeView _welcomeView;
+
 	public MainWindow()
 	{
 		InitializeComponent();
 		BuildRecentFilesMenu();
+
+		_welcomeView = new WelcomeView();
+		_welcomeView.Initialize(this);
+		WelcomeContent.Content = _welcomeView;
+	}
+
+	private void UpdateWelcomeVisibility()
+	{
+		bool hasTabs = DocumentTabs.Items.Count > 0;
+		DocumentTabs.IsVisible = hasTabs;
+		WelcomeContent.IsVisible = !hasTabs;
+		if (!hasTabs)
+			_welcomeView.RefreshRecentFiles();
 	}
 
 	private async void MenuOpen_Click(object? sender, RoutedEventArgs e)
@@ -83,12 +98,14 @@ public partial class MainWindow : Window
 		{
 			mapView.Dispose();
 			DocumentTabs.Items.Remove(tab2);
+			UpdateWelcomeVisibility();
 		};
 		headerPanel.Children.Add(closeBtn);
 		tab2.Header = headerPanel;
 
 		DocumentTabs.Items.Add(tab2);
 		DocumentTabs.SelectedItem = tab2;
+		UpdateWelcomeVisibility();
 
 		mapView.LoadMap(filePath, this);
 	}
@@ -129,12 +146,17 @@ public partial class MainWindow : Window
 			Background = Avalonia.Media.Brushes.Transparent,
 			BorderThickness = new Avalonia.Thickness(0)
 		};
-		closeBtn.Click += (_, _) => DocumentTabs.Items.Remove(newTab);
+		closeBtn.Click += (_, _) =>
+		{
+			DocumentTabs.Items.Remove(newTab);
+			UpdateWelcomeVisibility();
+		};
 		headerPanel.Children.Add(closeBtn);
 		newTab.Header = headerPanel;
 
 		DocumentTabs.Items.Add(newTab);
 		DocumentTabs.SelectedItem = newTab;
+		UpdateWelcomeVisibility();
 	}
 
 	private async void MenuAbout_Click(object? sender, RoutedEventArgs e)

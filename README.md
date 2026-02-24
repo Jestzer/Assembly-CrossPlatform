@@ -7,11 +7,11 @@ Assembly Crossplatform is a free, open-source Halo map file (.map) editor built 
 ## Features
 
 * **Cross-platform** - Runs on Windows, Linux, and macOS using .NET 8 and Avalonia UI
-* **Multi-generation support** - Opens cache files for Halo CE, Halo 2, Halo 3, Halo: Reach, Halo 4, and Halo MCC
+* **Multi-generation support** - Opens cache (map) files for Halo CE, Halo 2, Halo 3, Halo: Reach, Halo 4, and Halo MCC
 * **Tag editing** - Browse and edit tag metadata with a searchable field editor, hex viewer, and real-time memory poking
 * **Tag swapping** - Swap tags between datum indices directly from the editor
-* **Map compression** - Compress and decompress map files (supports multiple Halo engine formats)
-* **Real-time editing (RTE)** - Poke changes directly to game memory on supported engines
+* **Map compression** - Compress and decompress map files (supports multiple Halo games)
+* **Real-time editing (RTE)** - Poke changes directly to game memory on supported engines (currently only MCC)
 
 ## Downloading
 

@@ -12,7 +12,7 @@ public partial class AboutWindow : Window
 
 		var version = Assembly.GetExecutingAssembly().GetName().Version;
 		string versionStr = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.0";
-		TitleText.Text = $"Assembly v{versionStr}";
+		TitleText.Text = $"Assembly Crossplatform v{versionStr}";
 	}
 
 	private void OK_Click(object? sender, RoutedEventArgs e)

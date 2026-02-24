@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="AssemblyAvalonia.Views.AboutWindow"
-        Title="About Assembly"
+        Title="About Assembly Crossplatform"
         Width="480" Height="580"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
@@ -27,12 +27,12 @@
 
     <!-- Cross-Platform Port -->
     <TextBlock Text="Cross-Platform Port" FontSize="15" FontWeight="SemiBold"
-               Foreground="#FF0078D7" Margin="0,0,0,6" />
+               Foreground="#FF1A9E4A" Margin="0,0,0,6" />
     <TextBlock Text="    Jestzer" Foreground="#FFCCCCCC" FontSize="13" Margin="0,0,0,14" />
 
     <!-- Original R&D -->
     <TextBlock Text="Original Research and Development" FontSize="15" FontWeight="SemiBold"
-               Foreground="#FF0078D7" Margin="0,0,0,6" />
+               Foreground="#FF1A9E4A" Margin="0,0,0,6" />
     <WrapPanel Margin="16,0,0,14">
       <TextBlock Text="AMD" Foreground="#FFCCCCCC" FontSize="13" Margin="0,0,16,2" />
       <TextBlock Text="0xdeafcafe" Foreground="#FFCCCCCC" FontSize="13" Margin="0,0,16,2" />
@@ -47,7 +47,7 @@
 
     <!-- Special Thanks -->
     <TextBlock Text="Special Thanks" FontSize="15" FontWeight="SemiBold"
-               Foreground="#FF0078D7" Margin="0,0,0,6" />
+               Foreground="#FF1A9E4A" Margin="0,0,0,6" />
     <WrapPanel Margin="16,0,0,14">
       <TextBlock Text="Xenomega" Foreground="#FFCCCCCC" FontSize="13" Margin="0,0,16,2" />
       <TextBlock Text="Kornman00" Foreground="#FFCCCCCC" FontSize="13" Margin="0,0,16,2" />

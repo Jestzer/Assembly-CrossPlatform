@@ -197,7 +197,7 @@ public partial class HaloMapView : UserControl, IDisposable
 			string fileName = Path.GetFileName(_filePath);
 			string game = _buildInfo.Name;
 			_parentWindow.SetStatus($"Loaded {fileName} ({game}) - {_cacheFile.Tags.Count} tags");
-			_parentWindow.Title = $"Assembly - {fileName}";
+			_parentWindow.Title = $"Assembly Crossplatform - {fileName}";
 
 			// Add to recent files
 			AppState.Settings.AddRecentFile(fileName, _filePath, game);

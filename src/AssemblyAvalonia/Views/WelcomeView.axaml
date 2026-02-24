@@ -9,7 +9,7 @@
                   Spacing="8" Margin="40" MaxWidth="500">
 
       <!-- Title -->
-      <TextBlock Text="Assembly" FontSize="28" FontWeight="Bold"
+      <TextBlock Text="Assembly Crossplatform" FontSize="28" FontWeight="Bold"
                  Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" />
       <TextBlock Text="Cross-platform Halo map editor"
                  Foreground="{StaticResource TextSecondaryBrush}" FontSize="13"

@@ -6,8 +6,8 @@
   <Color x:Key="SidebarBackground">#FF252526</Color>
   <Color x:Key="SidebarBlock">#FF3F3F46</Color>
   <Color x:Key="SidebarHeader">#FF2D2D30</Color>
-  <Color x:Key="AccentColor">#FF0079CB</Color>
-  <Color x:Key="AccentColorSecondary">#FF1D98EB</Color>
+  <Color x:Key="AccentColor">#FF1A9E4A</Color>
+  <Color x:Key="AccentColorSecondary">#FF1DB954</Color>
   <Color x:Key="TextPrimary">#FFFFFFFF</Color>
   <Color x:Key="TextSecondary">#FF989898</Color>
   <Color x:Key="ActionHover">#FF3F3F41</Color>

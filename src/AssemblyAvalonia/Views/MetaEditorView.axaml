@@ -43,8 +43,9 @@
     </ScrollViewer>
 
     <!-- Scrollable field list -->
-    <ScrollViewer x:Name="FieldScroller" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-      <ItemsControl x:Name="FieldList" Margin="4" />
+    <ScrollViewer x:Name="FieldScroller" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                  Padding="8,4,20,4">
+      <ItemsControl x:Name="FieldList" />
     </ScrollViewer>
   </DockPanel>
 

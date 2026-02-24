@@ -16,7 +16,7 @@
       <SolidColorBrush x:Key="FieldLabelBrush" Color="#FF989898" />
       <SolidColorBrush x:Key="FieldValueBrush" Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="FieldTypeBrush" Color="#FF6A9955" />
-      <SolidColorBrush x:Key="BlockHeaderBrush" Color="#FF0079CB" />
+      <SolidColorBrush x:Key="BlockHeaderBrush" Color="#FF1A9E4A" />
     </ResourceDictionary>
   </Application.Resources>
 

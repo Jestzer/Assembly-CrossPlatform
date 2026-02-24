@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>AssemblyAvalonia</RootNamespace>
-    <AssemblyName>AssemblyAvalonia</AssemblyName>
+    <AssemblyName>AssemblyCrossplatform</AssemblyName>
     <Version>1.0.0</Version>
     <Nullable>enable</Nullable>
     <ApplicationIcon>Assets/app_icon_large.ico</ApplicationIcon>

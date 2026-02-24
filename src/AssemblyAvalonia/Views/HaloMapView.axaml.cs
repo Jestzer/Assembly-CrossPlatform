@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AssemblyAvalonia.Helpers;
 using AssemblyAvalonia.Models;
@@ -229,17 +230,111 @@ public partial class HaloMapView : UserControl, IDisposable
 		TagTree.ItemsSource = filtered;
 	}
 
+	private TagEntry _selectedTag;
+
 	private void TagTree_SelectionChanged(object? sender, SelectionChangedEventArgs e)
 	{
 		if (TagTree.SelectedItem is TagEntry entry && _cacheFile != null && _buildInfo != null)
 		{
+			_selectedTag = entry;
 			_parentWindow.SetStatus($"Loading tag: [{entry.GroupName}] {entry.TagFileName}...");
+
+			// Show swap panel with current datum index and populate group dropdown
+			SwapPanel.IsVisible = true;
+			CurrentDatumText.Text = entry.DatumIndexString;
+			SwapGroupCombo.ItemsSource = _allGroups;
+			SwapGroupCombo.SelectedIndex = -1;
+			SwapTagCombo.ItemsSource = null;
 
 			var metaEditor = new MetaEditorView();
 			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
 			MetaContent.Content = metaEditor;
 
 			_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");
+		}
+	}
+
+	private void SwapGroupCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+	{
+		if (SwapGroupCombo.SelectedItem is TagGroup group)
+			SwapTagCombo.ItemsSource = group.Children;
+		else
+			SwapTagCombo.ItemsSource = null;
+	}
+
+	private async void SwapTags_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_selectedTag?.RawTag == null || _cacheFile == null)
+			return;
+
+		if (SwapTagCombo.SelectedItem is not TagEntry targetEntry || targetEntry.RawTag == null)
+		{
+			string msg = "No target tag selected. Choose a group and tag to swap with.";
+			_parentWindow.SetStatus(msg);
+			await ErrorDialog.Show(_parentWindow, msg);
+			return;
+		}
+
+		ITag sourceTag = _selectedTag.RawTag;
+		ITag targetTag = targetEntry.RawTag;
+
+		if (sourceTag.Index.Value == targetTag.Index.Value)
+		{
+			string msg = "Cannot swap a tag with itself.";
+			_parentWindow.SetStatus(msg);
+			await ErrorDialog.Show(_parentWindow, msg);
+			return;
+		}
+
+		// Swap MetaLocation pointers
+		var tempMeta = sourceTag.MetaLocation;
+		sourceTag.MetaLocation = targetTag.MetaLocation;
+		targetTag.MetaLocation = tempMeta;
+
+		// Swap groups if different
+		if (sourceTag.Group != targetTag.Group)
+		{
+			var tempGroup = sourceTag.Group;
+			sourceTag.Group = targetTag.Group;
+			targetTag.Group = tempGroup;
+		}
+
+		// Save changes to the map file
+		try
+		{
+			// Close the read stream so we can open for writing
+			var endianness = _cacheFile.Endianness;
+			_reader?.Dispose();
+			_fileStream?.Dispose();
+
+			using (var stream = new EndianStream(File.Open(_filePath, FileMode.Open, FileAccess.ReadWrite), endianness))
+			{
+				_cacheFile.SaveChanges(stream);
+			}
+
+			_parentWindow.SetStatus($"Swapped [{_selectedTag.TagFileName}] with [{targetEntry.TagFileName}]. Reload the map to see updated metadata.");
+		}
+		catch (Exception ex)
+		{
+			// Undo the swap on failure
+			var tempMeta2 = sourceTag.MetaLocation;
+			sourceTag.MetaLocation = targetTag.MetaLocation;
+			targetTag.MetaLocation = tempMeta2;
+			if (sourceTag.Group != targetTag.Group)
+			{
+				var tempGroup2 = sourceTag.Group;
+				sourceTag.Group = targetTag.Group;
+				targetTag.Group = tempGroup2;
+			}
+			string msg = $"Swap failed: {ex.Message}";
+			_parentWindow.SetStatus(msg);
+			await ErrorDialog.Show(_parentWindow, msg);
+		}
+		finally
+		{
+			// Reopen the file for continued reading
+			_fileStream = File.OpenRead(_filePath);
+			_reader = new EndianReader(_fileStream, _cacheFile.Endianness);
 		}
 	}
 

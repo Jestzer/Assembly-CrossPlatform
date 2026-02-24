@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AssemblyAvalonia.Views.ErrorDialog"
+        Title="Error"
+        Width="400" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF1E1E1E">
+
+  <StackPanel Margin="20,16,20,16" Spacing="16">
+    <TextBlock x:Name="MessageText" TextWrapping="Wrap"
+               Foreground="#FFCCCCCC" FontSize="13" />
+    <Button Content="OK" HorizontalAlignment="Right" Padding="24,6"
+            Click="OK_Click" />
+  </StackPanel>
+
+</Window>

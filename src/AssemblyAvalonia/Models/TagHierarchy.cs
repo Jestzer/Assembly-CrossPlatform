@@ -146,6 +146,16 @@ namespace AssemblyAvalonia.Models
 			get { return _isNull; }
 		}
 
+		public string DatumIndexString
+		{
+			get
+			{
+				if (_rawTag == null)
+					return "";
+				return $"0x{_rawTag.Index.Value:X8}";
+			}
+		}
+
 		public bool IsBookmark
 		{
 			get { return _isBookmark; }

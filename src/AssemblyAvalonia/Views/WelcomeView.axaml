@@ -11,7 +11,7 @@
       <!-- Title -->
       <TextBlock Text="Assembly" FontSize="28" FontWeight="Bold"
                  Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" />
-      <TextBlock Text="Cross-platform Halo cache file editor"
+      <TextBlock Text="Cross-platform Halo map editor"
                  Foreground="{StaticResource TextSecondaryBrush}" FontSize="13"
                  HorizontalAlignment="Center" Margin="0,0,0,16" />
 

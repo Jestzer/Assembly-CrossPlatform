@@ -13,7 +13,7 @@
     <!-- Title -->
     <TextBlock x:Name="TitleText" FontSize="22" FontWeight="Bold"
                Foreground="#FFFFFFFF" Margin="0,0,0,4" />
-    <TextBlock Text="Cross-platform Halo cache file editor"
+    <TextBlock Text="Cross-platform Halo map editor"
                Foreground="#FF999999" FontSize="13" Margin="0,0,0,16" />
 
     <Separator Background="#FF444444" Margin="0,0,0,16" />
@@ -21,7 +21,7 @@
     <!-- Description -->
     <TextBlock TextWrapping="Wrap" Foreground="#FFBBBBBB" FontSize="13" Margin="0,0,0,16">
       Assembly is an application for research and modification of Blam engine
-      cache files, originally created by the Xbox Chaos community. This cross-platform
+      map files, originally created by the Xbox Chaos community. This cross-platform
       port uses Avalonia UI and runs on Windows, Linux, and macOS.
     </TextBlock>
 

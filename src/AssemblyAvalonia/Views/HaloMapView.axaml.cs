@@ -41,6 +41,11 @@ public partial class HaloMapView : UserControl, IDisposable
 		InitializeComponent();
 	}
 
+	/// <summary>
+	///     Called when map loading fails. Set by the caller to handle cleanup.
+	/// </summary>
+	public Action<string> OnLoadFailed { get; set; }
+
 	public void LoadMap(string filePath, MainWindow parent)
 	{
 		_filePath = filePath;
@@ -55,7 +60,11 @@ public partial class HaloMapView : UserControl, IDisposable
 			catch (Exception ex)
 			{
 				Dispatcher.UIThread.Post(() =>
-					_parentWindow.SetStatus($"Error loading map: {ex.Message}"));
+				{
+					string msg = $"Error loading map: {ex.Message}";
+					_parentWindow.SetStatus(msg);
+					OnLoadFailed?.Invoke(msg);
+				});
 			}
 		});
 	}

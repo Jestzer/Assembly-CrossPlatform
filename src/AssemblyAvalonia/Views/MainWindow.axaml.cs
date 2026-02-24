@@ -107,6 +107,13 @@ public partial class MainWindow : Window
 		DocumentTabs.SelectedItem = tab2;
 		UpdateWelcomeVisibility();
 
+		mapView.OnLoadFailed = async (msg) =>
+		{
+			mapView.Dispose();
+			DocumentTabs.Items.Remove(tab2);
+			UpdateWelcomeVisibility();
+			await ErrorDialog.Show(this, msg);
+		};
 		mapView.LoadMap(filePath, this);
 	}
 

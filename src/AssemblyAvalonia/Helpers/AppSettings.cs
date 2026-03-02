@@ -33,6 +33,11 @@ namespace AssemblyAvalonia.Helpers
 		public bool PluginsShowInvisibles { get; set; }
 		public bool PluginsShowDataRefNotice { get; set; } = true;
 
+		// Console connection
+		public string ConsoleXboxIp { get; set; } = "";
+		public string ConsoleXbox360Ip { get; set; } = "";
+		public bool ConsoleXbox360Fusion { get; set; }
+
 		// Shared map paths — key: "{internalName}:{sourceIndex}", value: absolute file path
 		public Dictionary<string, string> SharedMapPaths { get; set; } = new();
 

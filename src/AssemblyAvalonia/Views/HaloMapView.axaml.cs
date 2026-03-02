@@ -12,6 +12,7 @@ using AssemblyAvalonia.Models;
 using Blamite.Blam;
 using Blamite.IO;
 using Blamite.RTE;
+using Blamite.RTE.Console;
 using Blamite.RTE.PC;
 using Blamite.Serialization;
 using Blamite.Serialization.Settings;
@@ -141,6 +142,27 @@ public partial class HaloMapView : UserControl, IDisposable
 					_rteProvider = new PCThirdGenRTEProvider(_buildInfo);
 					break;
 			}
+		}
+		else if (_buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox ||
+		         _buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox360)
+		{
+			// Console RTE — provider created on-demand when user connects.
+			bool isXbox = _buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox;
+			Dispatcher.UIThread.Post(() =>
+			{
+				ConsolePanel.IsVisible = true;
+				if (isXbox)
+				{
+					ConsolePlatformLabel.Text = "Xbox Console (XBDM)";
+					ConsoleIpBox.Text = AppState.Settings.ConsoleXboxIp;
+				}
+				else
+				{
+					ConsolePlatformLabel.Text = "Xbox 360 Console (XBDM)";
+					ConsoleIpBox.Text = AppState.Settings.ConsoleXbox360Ip;
+				}
+				ConsoleStatusText.Text = "Enter IP and click Connect to enable poking.";
+			});
 		}
 
 		// Build string ID trie
@@ -473,6 +495,74 @@ public partial class HaloMapView : UserControl, IDisposable
 		RefreshSharedMapLabel();
 		RefreshSharedMapHeaders();
 		_parentWindow?.SetStatus("Shared map paths cleared.");
+	}
+
+	private void ConsoleConnect_Click(object? sender, RoutedEventArgs e)
+	{
+		string ip = ConsoleIpBox.Text?.Trim();
+		if (string.IsNullOrEmpty(ip))
+		{
+			ConsoleStatusText.Text = "Please enter the console's IP address.";
+			return;
+		}
+
+		// If already connected, disconnect
+		if (_rteProvider is ConsoleRTEProvider)
+		{
+			_rteProvider = null;
+			ConsoleConnectBtn.Content = "Connect";
+			ConsoleStatusText.Text = "Disconnected.";
+			_parentWindow?.SetStatus("Console disconnected.");
+			return;
+		}
+
+		// Create the appropriate console object
+		XConsole console;
+		if (_buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox)
+		{
+			console = new XbConsole(ip);
+			AppState.Settings.ConsoleXboxIp = ip;
+		}
+		else
+		{
+			console = new XeConsole(ip, AppState.Settings.ConsoleXbox360Fusion);
+			AppState.Settings.ConsoleXbox360Ip = ip;
+		}
+		AppState.Settings.Save();
+
+		ConsoleStatusText.Text = "Connecting...";
+		ConsoleConnectBtn.IsEnabled = false;
+
+		Task.Run(() =>
+		{
+			bool success = console.Connect();
+			string runningTitle = null;
+			if (success)
+			{
+				runningTitle = console.GetRunningTitle();
+				console.Disconnect();
+			}
+
+			Dispatcher.UIThread.Post(() =>
+			{
+				ConsoleConnectBtn.IsEnabled = true;
+				if (success)
+				{
+					_rteProvider = new ConsoleRTEProvider(console);
+					ConsoleConnectBtn.Content = "Disconnect";
+					string titleInfo = !string.IsNullOrEmpty(runningTitle)
+						? $" Running: {runningTitle}"
+						: "";
+					ConsoleStatusText.Text = $"Connected to {ip}.{titleInfo}";
+					_parentWindow?.SetStatus($"Console connected: {ip}");
+				}
+				else
+				{
+					ConsoleStatusText.Text = $"Could not connect to {ip}. Verify the console is on and XBDM is running.";
+					_parentWindow?.SetStatus($"Console connection failed: {ip}");
+				}
+			});
+		});
 	}
 
 	private void SwapGroupCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)

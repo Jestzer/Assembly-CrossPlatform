@@ -40,6 +40,25 @@
         </StackPanel>
       </Border>
 
+      <!-- Console connection panel (visible for Xbox/Xbox 360 maps) -->
+      <Border x:Name="ConsolePanel" DockPanel.Dock="Top" IsVisible="False"
+              Margin="4,0,4,4" Padding="4"
+              Background="{StaticResource MainBackgroundBrush}" CornerRadius="4">
+        <StackPanel Spacing="4">
+          <TextBlock x:Name="ConsolePlatformLabel" FontSize="11" FontWeight="Bold"
+                     Foreground="{StaticResource TextSecondaryBrush}" />
+          <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+            <TextBox x:Name="ConsoleIpBox" Watermark="Console IP address"
+                     FontSize="11" Padding="4,2" />
+            <Button x:Name="ConsoleConnectBtn" Grid.Column="1" Content="Connect"
+                    Padding="8,2" FontSize="11" Margin="4,0,0,0"
+                    Click="ConsoleConnect_Click" />
+          </Grid>
+          <TextBlock x:Name="ConsoleStatusText" FontSize="10"
+                     Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
       <!-- Tag search -->
       <TextBox x:Name="TagSearchBox" DockPanel.Dock="Top"
                Watermark="Search tags..." Margin="4"

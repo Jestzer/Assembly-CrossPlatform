@@ -57,6 +57,17 @@ public partial class MetaEditorView : UserControl
 	/// </summary>
 	public Action<bool, string> OnLoadComplete { get; set; }
 
+	/// <summary>
+	///     Callback to switch from meta editor back to bitmap preview.
+	///     Set by the caller for bitm tags. When set, the "Show Preview" button is shown.
+	/// </summary>
+	public Action ShowBitmapPreview { get; set; }
+
+	/// <summary>
+	///     Optional override for the "Show Preview" button text.
+	/// </summary>
+	public string ShowPreviewLabel { get; set; }
+
 	private static string ResolvePluginPath(string groupMagic, EngineDescription buildInfo)
 	{
 		string cacheKey = $"{buildInfo.Name}:{groupMagic}";
@@ -112,6 +123,9 @@ public partial class MetaEditorView : UserControl
 		HexToggle.IsVisible = false;
 		PokeButton.IsVisible = false;
 		RefreshMemButton.IsVisible = false;
+		ShowPreviewButton.IsVisible = ShowBitmapPreview != null;
+		if (ShowPreviewLabel != null)
+			ShowPreviewButton.Content = ShowPreviewLabel;
 
 		// Capture values for background thread
 		var segmentGroup = _srcSegmentGroup;
@@ -346,6 +360,11 @@ public partial class MetaEditorView : UserControl
 		if (field is WrappedTagBlockEntry wt)
 			return GetFieldName(wt.WrappedField);
 		return null;
+	}
+
+	private void ShowPreview_Click(object? sender, RoutedEventArgs e)
+	{
+		ShowBitmapPreview?.Invoke();
 	}
 
 	private void HexToggle_Click(object? sender, RoutedEventArgs e)

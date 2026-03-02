@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AssemblyAvalonia.Helpers;
 using AssemblyAvalonia.Models;
@@ -30,6 +31,8 @@ public partial class HaloMapView : UserControl, IDisposable
 	private EndianReader _reader;
 	private Stream _fileStream;
 	private RTEProvider _rteProvider;
+	private Dictionary<int, string> _sharedMapOverrides = new();
+	private List<HeaderValue> _headerValues;
 
 	// Cached lowercase names for fast search
 	private Dictionary<TagGroup, string> _lowerGroupMagic;
@@ -39,6 +42,11 @@ public partial class HaloMapView : UserControl, IDisposable
 	public HaloMapView()
 	{
 		InitializeComponent();
+
+		// Restore sidebar width from settings
+		double savedWidth = AppState.Settings.SidebarWidth;
+		if (savedWidth >= 200)
+			MainGrid.ColumnDefinitions[0].Width = new GridLength(savedWidth);
 	}
 
 	/// <summary>
@@ -50,6 +58,19 @@ public partial class HaloMapView : UserControl, IDisposable
 	{
 		_filePath = filePath;
 		_parentWindow = parent;
+
+		// Show loading message in the content area
+		string fileName = Path.GetFileName(filePath);
+		this.TryFindResource("TextSecondaryBrush", out var secondaryBrush);
+		var textBrush = secondaryBrush as Avalonia.Media.IBrush ?? Avalonia.Media.Brushes.Gray;
+		MetaContent.Content = new TextBlock
+		{
+			Text = $"Loading {fileName}...",
+			Foreground = textBrush,
+			HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+			VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+			FontSize = 16,
+		};
 
 		Task.Run(() =>
 		{
@@ -197,11 +218,41 @@ public partial class HaloMapView : UserControl, IDisposable
 		if (_cacheFile.StringIDs != null)
 			headerValues.Add(new HeaderValue("String IDs", _cacheFile.StringIDs.Count.ToString()));
 
+		// Load saved shared map overrides for this map
+		var sharedOverrides = AppState.Settings.GetSharedMapOverrides(_cacheFile.InternalName);
+		bool isSecondGen = _cacheFile.Engine == EngineType.SecondGeneration;
+		foreach (var kvp in sharedOverrides)
+		{
+			string srcName = Blamite.Blam.Textures.SecondGenBitmapTagReader.GetSourceDescription(kvp.Key << 30);
+			headerValues.Add(new HeaderValue("Shared Map", $"{srcName} \u2192 {Path.GetFileName(kvp.Value)}"));
+		}
+
 		// Update UI on dispatcher thread
 		Dispatcher.UIThread.Post(() =>
 		{
+			_sharedMapOverrides = sharedOverrides;
+			_headerValues = headerValues;
 			HeaderList.ItemsSource = headerValues;
+
+			// Show shared maps panel for 2nd gen engines
+			if (isSecondGen)
+			{
+				SharedMapsPanel.IsVisible = true;
+				RefreshSharedMapLabel();
+			}
 			TagTree.ItemsSource = _allGroups;
+
+			// Replace loading message with the default prompt
+			this.TryFindResource("TextSecondaryBrush", out var brush);
+			var promptBrush = brush as Avalonia.Media.IBrush ?? Avalonia.Media.Brushes.Gray;
+			MetaContent.Content = new TextBlock
+			{
+				Text = "Select a tag to view its metadata.",
+				Foreground = promptBrush,
+				HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+				VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+				FontSize = 16,
+			};
 
 			string fileName = Path.GetFileName(_filePath);
 			string game = _buildInfo.Name;
@@ -275,15 +326,153 @@ public partial class HaloMapView : UserControl, IDisposable
 			SwapGroupCombo.SelectedIndex = -1;
 			SwapTagCombo.ItemsSource = null;
 
-			var metaEditor = new MetaEditorView();
-			metaEditor.OnLoadComplete = (success, error) =>
+			// Show bitmap preview for bitm tags, meta editor for everything else
+			string groupMagic = CharConstant.ToString(entry.RawTag.Group.Magic);
+			if (groupMagic == "bitm" && entry.RawTag.MetaLocation != null)
 			{
-				if (success)
-					_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");
-			};
-			metaEditor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
-			MetaContent.Content = metaEditor;
+				// ThirdGen bitmap preview is experimental — default to meta view
+				if (_cacheFile.Engine == EngineType.ThirdGeneration)
+					ShowMetaEditorForTag(entry, true);
+				else
+					ShowBitmapPreviewForTag(entry);
+			}
+			else
+				ShowMetaEditorForTag(entry, false);
 		}
+	}
+
+	private void ShowBitmapPreviewForTag(TagEntry entry)
+	{
+		var preview = new BitmapPreviewView();
+		preview.ShowMetaEditor = () => ShowMetaEditorForTag(entry, true);
+		preview.InitialSharedMapOverrides = _sharedMapOverrides;
+		preview.OnSharedMapSelected = (sourceIndex, chosenPath) =>
+		{
+			AppState.Settings.SetSharedMapPath(_cacheFile.InternalName, sourceIndex, chosenPath);
+			_sharedMapOverrides[sourceIndex] = chosenPath;
+			RefreshSharedMapLabel();
+			RefreshSharedMapHeaders();
+		};
+		preview.LoadBitmap(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
+		MetaContent.Content = preview;
+		_parentWindow.SetStatus($"Loaded bitmap: [{entry.GroupName}] {entry.TagFileName}");
+	}
+
+	private void ShowMetaEditorForTag(TagEntry entry, bool isBitm)
+	{
+		var editor = new MetaEditorView();
+		editor.OnLoadComplete = (success, error) =>
+		{
+			if (success)
+				_parentWindow.SetStatus($"Loaded tag: [{entry.GroupName}] {entry.TagFileName}");
+		};
+		if (isBitm)
+		{
+			editor.ShowBitmapPreview = () => ShowBitmapPreviewForTag(entry);
+			if (_cacheFile.Engine == EngineType.ThirdGeneration)
+				editor.ShowPreviewLabel = "Show Preview (Experimental)";
+		}
+		editor.LoadTag(entry, _cacheFile, _buildInfo, _filePath, _hierarchy, _stringIdTrie, _parentWindow, _rteProvider);
+		MetaContent.Content = editor;
+	}
+
+	private void RefreshSharedMapLabel()
+	{
+		if (_sharedMapOverrides.Count == 0)
+		{
+			SharedMapLabel.Text = "No shared map configured.";
+			SharedMapClearBtn.IsVisible = false;
+		}
+		else
+		{
+			var parts = new List<string>();
+			foreach (var kvp in _sharedMapOverrides)
+			{
+				string srcName = Blamite.Blam.Textures.SecondGenBitmapTagReader.GetSourceDescription(kvp.Key << 30);
+				parts.Add($"{srcName}: {Path.GetFileName(kvp.Value)}");
+			}
+			SharedMapLabel.Text = string.Join("\n", parts);
+			SharedMapClearBtn.IsVisible = true;
+		}
+	}
+
+	private void RefreshSharedMapHeaders()
+	{
+		if (_headerValues == null || _cacheFile == null)
+			return;
+
+		// Remove existing shared map entries
+		_headerValues.RemoveAll(h => h.Title == "Shared Map");
+
+		// Add current overrides
+		foreach (var kvp in _sharedMapOverrides)
+		{
+			string srcName = Blamite.Blam.Textures.SecondGenBitmapTagReader.GetSourceDescription(kvp.Key << 30);
+			_headerValues.Add(new HeaderValue("Shared Map", $"{srcName} \u2192 {Path.GetFileName(kvp.Value)}"));
+		}
+
+		// Avalonia ItemsControl needs a new list reference to trigger a refresh
+		HeaderList.ItemsSource = new List<HeaderValue>(_headerValues);
+	}
+
+	private async void SharedMapBrowse_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_cacheFile == null)
+			return;
+
+		var topLevel = TopLevel.GetTopLevel(this);
+		if (topLevel == null)
+			return;
+
+		try
+		{
+			var dialog = await topLevel.StorageProvider.OpenFilePickerAsync(
+				new Avalonia.Platform.Storage.FilePickerOpenOptions
+				{
+					Title = "Locate shared map file",
+					AllowMultiple = false,
+					FileTypeFilter = new[]
+					{
+						new Avalonia.Platform.Storage.FilePickerFileType("Halo Map Files")
+						{
+							Patterns = new[] { "*.map" }
+						}
+					}
+				});
+
+			if (dialog == null || dialog.Count == 0)
+				return;
+
+			string chosenPath = dialog[0].TryGetLocalPath();
+			if (string.IsNullOrEmpty(chosenPath))
+				return;
+
+			// Default to source 2 (shared.map) — the most common shared resource
+			int sourceIndex = 2;
+			AppState.Settings.SetSharedMapPath(_cacheFile.InternalName, sourceIndex, chosenPath);
+			_sharedMapOverrides[sourceIndex] = chosenPath;
+
+			RefreshSharedMapLabel();
+			RefreshSharedMapHeaders();
+			_parentWindow?.SetStatus($"Shared map set: {Path.GetFileName(chosenPath)}");
+		}
+		catch (Exception ex)
+		{
+			_parentWindow?.SetStatus($"Browse failed: {ex.Message}");
+		}
+	}
+
+	private void SharedMapClear_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_cacheFile == null)
+			return;
+
+		AppState.Settings.ClearAllSharedMapPaths(_cacheFile.InternalName);
+		_sharedMapOverrides.Clear();
+
+		RefreshSharedMapLabel();
+		RefreshSharedMapHeaders();
+		_parentWindow?.SetStatus("Shared map paths cleared.");
 	}
 
 	private void SwapGroupCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -372,6 +561,19 @@ public partial class HaloMapView : UserControl, IDisposable
 
 	public void Dispose()
 	{
+		// Save sidebar width before disposing.
+		// When the user drags the GridSplitter, Avalonia converts the column
+		// width to an absolute pixel value — read it back from the GridLength.
+		var colWidth = MainGrid.ColumnDefinitions[0].Width;
+		double sidebarWidth = colWidth.IsAbsolute ? colWidth.Value : 0;
+		if (sidebarWidth <= 0)
+			sidebarWidth = AppState.Settings.SidebarWidth; // preserve previous value
+		if (sidebarWidth >= 200)
+		{
+			AppState.Settings.SidebarWidth = sidebarWidth;
+			AppState.Settings.Save();
+		}
+
 		_reader?.Dispose();
 		_fileStream?.Dispose();
 	}

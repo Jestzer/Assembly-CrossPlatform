@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Newtonsoft.Json;
@@ -24,13 +25,67 @@ namespace AssemblyAvalonia.Helpers
 		public double WindowHeight { get; set; } = 600;
 		public bool WindowMaximized { get; set; }
 
+		// Layout
+		public double SidebarWidth { get; set; } = 300;
+
 		// Plugin display
 		public bool PluginsShowComments { get; set; } = true;
 		public bool PluginsShowInvisibles { get; set; }
 		public bool PluginsShowDataRefNotice { get; set; } = true;
 
+		// Shared map paths — key: "{internalName}:{sourceIndex}", value: absolute file path
+		public Dictionary<string, string> SharedMapPaths { get; set; } = new();
+
 		// Recent files
 		public ObservableCollection<RecentFileEntry> RecentFiles { get; set; } = new ObservableCollection<RecentFileEntry>();
+
+		public void SetSharedMapPath(string internalName, int sourceIndex, string path)
+		{
+			SharedMapPaths ??= new();
+			SharedMapPaths[$"{internalName}:{sourceIndex}"] = path;
+			Save();
+		}
+
+		public void ClearSharedMapPath(string internalName, int sourceIndex)
+		{
+			SharedMapPaths?.Remove($"{internalName}:{sourceIndex}");
+			Save();
+		}
+
+		public void ClearAllSharedMapPaths(string internalName)
+		{
+			if (SharedMapPaths == null || SharedMapPaths.Count == 0)
+				return;
+
+			var keysToRemove = new List<string>();
+			string prefix = $"{internalName}:";
+			foreach (var key in SharedMapPaths.Keys)
+			{
+				if (key.StartsWith(prefix, StringComparison.Ordinal))
+					keysToRemove.Add(key);
+			}
+			foreach (var key in keysToRemove)
+				SharedMapPaths.Remove(key);
+			Save();
+		}
+
+		public Dictionary<int, string> GetSharedMapOverrides(string internalName)
+		{
+			var result = new Dictionary<int, string>();
+			if (SharedMapPaths == null)
+				return result;
+
+			string prefix = $"{internalName}:";
+			foreach (var kvp in SharedMapPaths)
+			{
+				if (kvp.Key.StartsWith(prefix, StringComparison.Ordinal) &&
+					int.TryParse(kvp.Key.Substring(prefix.Length), out int sourceIndex))
+				{
+					result[sourceIndex] = kvp.Value;
+				}
+			}
+			return result;
+		}
 
 		public void AddRecentFile(string fileName, string filePath, string fileGame)
 		{

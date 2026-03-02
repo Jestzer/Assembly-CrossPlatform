@@ -33,8 +33,9 @@ namespace Blamite.IO
 			while (size > 0)
 			{
 				int read = input.ReadBlock(buffer, 0, Math.Min(BufferSize, size));
+				if (read <= 0) break;
 				output.WriteBlock(buffer, 0, read);
-				size -= BufferSize;
+				size -= read;
 			}
 		}
 
@@ -51,8 +52,9 @@ namespace Blamite.IO
 			while (size > 0)
 			{
 				int read = input.Read(buffer, 0, Math.Min(BufferSize, size));
+				if (read <= 0) break;
 				output.Write(buffer, 0, read);
-				size -= BufferSize;
+				size -= read;
 			}
 		}
 

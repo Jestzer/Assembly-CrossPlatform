@@ -20,6 +20,18 @@ public partial class MainWindow : Window
 		_welcomeView = new WelcomeView();
 		_welcomeView.Initialize(this);
 		WelcomeContent.Content = _welcomeView;
+
+		Closing += OnWindowClosing;
+	}
+
+	private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+	{
+		// Dispose all open map views so they can save sidebar width, etc.
+		foreach (TabItem tab in DocumentTabs.Items.Cast<TabItem>())
+		{
+			if (tab.Content is HaloMapView mapView)
+				mapView.Dispose();
+		}
 	}
 
 	private void UpdateWelcomeVisibility()

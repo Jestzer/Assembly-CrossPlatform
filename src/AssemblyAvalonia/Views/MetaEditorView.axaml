@@ -27,6 +27,8 @@
                 IsVisible="False" Padding="12,4" />
         <Button x:Name="RefreshMemButton" Content="Refresh from Memory" Click="RefreshFromMemory_Click"
                 IsVisible="False" Padding="12,4" />
+        <Button x:Name="ShowPreviewButton" Content="Show Preview" Padding="12,4"
+                IsVisible="False" Click="ShowPreview_Click" />
         <TextBox x:Name="SearchBox" Watermark="Search fields..." Width="200"
                  Padding="4,2" TextChanged="SearchBox_TextChanged" />
         <ToggleButton x:Name="HexToggle" Content="Hex" Padding="12,4"

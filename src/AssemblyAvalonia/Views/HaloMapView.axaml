@@ -3,10 +3,10 @@
              xmlns:models="clr-namespace:AssemblyAvalonia.Models"
              x:Class="AssemblyAvalonia.Views.HaloMapView">
 
-  <Grid ColumnDefinitions="300,Auto,*">
+  <Grid x:Name="MainGrid" ColumnDefinitions="300,Auto,*">
 
     <!-- Left sidebar: header info + tag tree -->
-    <DockPanel Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}">
+    <DockPanel Grid.Column="0" MinWidth="200" Background="{StaticResource SidebarBackgroundBrush}">
 
       <!-- Map info header -->
       <Expander DockPanel.Dock="Top" Header="Map Information" IsExpanded="True" Margin="4">
@@ -23,6 +23,22 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </Expander>
+
+      <!-- Shared maps panel (visible for engines with shared resources) -->
+      <Border x:Name="SharedMapsPanel" DockPanel.Dock="Top" IsVisible="False"
+              Margin="4,0,4,4" Padding="4"
+              Background="{StaticResource MainBackgroundBrush}" CornerRadius="4">
+        <StackPanel Spacing="4">
+          <TextBlock x:Name="SharedMapLabel" FontSize="11"
+                     Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button x:Name="SharedMapBrowseBtn" Content="Browse..." Padding="8,2" FontSize="11"
+                    Click="SharedMapBrowse_Click" />
+            <Button x:Name="SharedMapClearBtn" Content="Clear" Padding="8,2" FontSize="11"
+                    IsVisible="False" Click="SharedMapClear_Click" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
 
       <!-- Tag search -->
       <TextBox x:Name="TagSearchBox" DockPanel.Dock="Top"

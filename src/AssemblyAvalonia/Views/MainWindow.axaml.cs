@@ -15,6 +15,8 @@ public partial class MainWindow : Window
 	public MainWindow()
 	{
 		InitializeComponent();
+		XboxIpBox.Text = AppState.Settings.ConsoleXboxIp;
+		Xbox360IpBox.Text = AppState.Settings.ConsoleXbox360Ip;
 		BuildRecentFilesMenu();
 
 		_welcomeView = new WelcomeView();
@@ -187,6 +189,46 @@ public partial class MainWindow : Window
 	public void SetStatus(string text)
 	{
 		StatusText.Text = text;
+	}
+
+	private Action<string>? _xboxConnectHandler;
+	private Action<string>? _xbox360ConnectHandler;
+
+	public void RegisterXboxHandler(Action<string> handler) => _xboxConnectHandler = handler;
+	public void RegisterXbox360Handler(Action<string> handler) => _xbox360ConnectHandler = handler;
+	public void UnregisterXboxHandler() => _xboxConnectHandler = null;
+	public void UnregisterXbox360Handler() => _xbox360ConnectHandler = null;
+
+	public void UpdateXboxStatus(string status, string? buttonLabel = null, bool? buttonEnabled = null)
+	{
+		XboxStatusText.Text = status;
+		XboxStatusText.IsVisible = !string.IsNullOrEmpty(status);
+		if (buttonLabel != null) XboxConnectBtn.Content = buttonLabel;
+		if (buttonEnabled.HasValue) XboxConnectBtn.IsEnabled = buttonEnabled.Value;
+	}
+
+	public void UpdateXbox360Status(string status, string? buttonLabel = null, bool? buttonEnabled = null)
+	{
+		Xbox360StatusText.Text = status;
+		Xbox360StatusText.IsVisible = !string.IsNullOrEmpty(status);
+		if (buttonLabel != null) Xbox360ConnectBtn.Content = buttonLabel;
+		if (buttonEnabled.HasValue) Xbox360ConnectBtn.IsEnabled = buttonEnabled.Value;
+	}
+
+	private void XboxConnect_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_xboxConnectHandler != null)
+			_xboxConnectHandler(XboxIpBox.Text?.Trim() ?? "");
+		else
+			UpdateXboxStatus("No Xbox map is currently open.");
+	}
+
+	private void Xbox360Connect_Click(object? sender, RoutedEventArgs e)
+	{
+		if (_xbox360ConnectHandler != null)
+			_xbox360ConnectHandler(Xbox360IpBox.Text?.Trim() ?? "");
+		else
+			UpdateXbox360Status("No Xbox 360 map is currently open.");
 	}
 
 	public void BuildRecentFilesMenu()

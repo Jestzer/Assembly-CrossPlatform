@@ -32,6 +32,7 @@ public partial class HaloMapView : UserControl, IDisposable
 	private EndianReader _reader;
 	private Stream _fileStream;
 	private RTEProvider _rteProvider;
+	private RTEConnectionType? _consolePlatform;
 	private Dictionary<int, string> _sharedMapOverrides = new();
 	private List<HeaderValue> _headerValues;
 
@@ -146,22 +147,14 @@ public partial class HaloMapView : UserControl, IDisposable
 		else if (_buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox ||
 		         _buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox360)
 		{
-			// Console RTE — provider created on-demand when user connects.
+			_consolePlatform = _buildInfo.PokingPlatform;
 			bool isXbox = _buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox;
 			Dispatcher.UIThread.Post(() =>
 			{
-				ConsolePanel.IsVisible = true;
 				if (isXbox)
-				{
-					ConsolePlatformLabel.Text = "Xbox Console (XBDM)";
-					ConsoleIpBox.Text = AppState.Settings.ConsoleXboxIp;
-				}
+					_parentWindow.RegisterXboxHandler(HandleConsoleConnect);
 				else
-				{
-					ConsolePlatformLabel.Text = "Xbox 360 Console (XBDM)";
-					ConsoleIpBox.Text = AppState.Settings.ConsoleXbox360Ip;
-				}
-				ConsoleStatusText.Text = "Enter IP and click Connect to enable poking.";
+					_parentWindow.RegisterXbox360Handler(HandleConsoleConnect);
 			});
 		}
 
@@ -497,12 +490,16 @@ public partial class HaloMapView : UserControl, IDisposable
 		_parentWindow?.SetStatus("Shared map paths cleared.");
 	}
 
-	private void ConsoleConnect_Click(object? sender, RoutedEventArgs e)
+	private void HandleConsoleConnect(string ip)
 	{
-		string ip = ConsoleIpBox.Text?.Trim();
+		bool isXbox = _consolePlatform == RTEConnectionType.ConsoleXbox;
+		Action<string, string?, bool?> updateStatus = isXbox
+			? _parentWindow.UpdateXboxStatus
+			: _parentWindow.UpdateXbox360Status;
+
 		if (string.IsNullOrEmpty(ip))
 		{
-			ConsoleStatusText.Text = "Please enter the console's IP address.";
+			updateStatus("Please enter the console's IP address.", null, null);
 			return;
 		}
 
@@ -510,15 +507,14 @@ public partial class HaloMapView : UserControl, IDisposable
 		if (_rteProvider is ConsoleRTEProvider)
 		{
 			_rteProvider = null;
-			ConsoleConnectBtn.Content = "Connect";
-			ConsoleStatusText.Text = "Disconnected.";
+			updateStatus("Disconnected.", "Connect", true);
 			_parentWindow?.SetStatus("Console disconnected.");
 			return;
 		}
 
 		// Create the appropriate console object
 		XConsole console;
-		if (_buildInfo.PokingPlatform == RTEConnectionType.ConsoleXbox)
+		if (isXbox)
 		{
 			console = new XbConsole(ip);
 			AppState.Settings.ConsoleXboxIp = ip;
@@ -530,8 +526,7 @@ public partial class HaloMapView : UserControl, IDisposable
 		}
 		AppState.Settings.Save();
 
-		ConsoleStatusText.Text = "Connecting...";
-		ConsoleConnectBtn.IsEnabled = false;
+		updateStatus("Connecting...", null, false);
 
 		Task.Run(() =>
 		{
@@ -545,20 +540,20 @@ public partial class HaloMapView : UserControl, IDisposable
 
 			Dispatcher.UIThread.Post(() =>
 			{
-				ConsoleConnectBtn.IsEnabled = true;
 				if (success)
 				{
 					_rteProvider = new ConsoleRTEProvider(console);
-					ConsoleConnectBtn.Content = "Disconnect";
 					string titleInfo = !string.IsNullOrEmpty(runningTitle)
 						? $" Running: {runningTitle}"
 						: "";
-					ConsoleStatusText.Text = $"Connected to {ip}.{titleInfo}";
+					updateStatus($"Connected to {ip}.{titleInfo}", "Disconnect", true);
 					_parentWindow?.SetStatus($"Console connected: {ip}");
 				}
 				else
 				{
-					ConsoleStatusText.Text = $"Could not connect to {ip}. Verify the console is on and XBDM is running.";
+					updateStatus(
+						$"Could not connect to {ip}. Verify the console is on and XBDM is running.",
+						null, true);
 					_parentWindow?.SetStatus($"Console connection failed: {ip}");
 				}
 			});
@@ -666,5 +661,9 @@ public partial class HaloMapView : UserControl, IDisposable
 
 		_reader?.Dispose();
 		_fileStream?.Dispose();
+		if (_consolePlatform == RTEConnectionType.ConsoleXbox)
+			_parentWindow?.UnregisterXboxHandler();
+		else if (_consolePlatform == RTEConnectionType.ConsoleXbox360)
+			_parentWindow?.UnregisterXbox360Handler();
 	}
 }

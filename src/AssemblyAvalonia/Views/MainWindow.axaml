@@ -23,6 +23,31 @@
       <MenuItem Header="_Help">
         <MenuItem Header="_About Assembly Crossplatform" Click="MenuAbout_Click" />
       </MenuItem>
+      <MenuItem Header="Connect to Console" x:Name="MenuConsole">
+        <Panel Margin="6,2">
+          <StackPanel Spacing="0" HorizontalAlignment="Left">
+            <Grid ColumnDefinitions="80,Auto,Auto" Margin="0,5,0,5">
+              <TextBlock Grid.Column="0" Text="Original Xbox:" FontSize="11" FontWeight="Bold"
+                         VerticalAlignment="Center" Margin="0,0,6,0" />
+              <TextBox Grid.Column="1" x:Name="XboxIpBox" Watermark="IP address" Width="120"
+                       FontSize="11" Padding="4,2" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+              <Button Grid.Column="2" x:Name="XboxConnectBtn" Content="Connect"
+                      Padding="8,2" FontSize="11" Margin="4,0,0,0" Click="XboxConnect_Click" />
+            </Grid>
+            <TextBlock x:Name="XboxStatusText" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,4" IsVisible="False" />
+            <Separator />
+            <Grid ColumnDefinitions="80,Auto,Auto" Margin="0,5,0,5">
+              <TextBlock Grid.Column="0" Text="Xbox 360:" FontSize="11" FontWeight="Bold"
+                         VerticalAlignment="Center" Margin="0,0,6,0" />
+              <TextBox Grid.Column="1" x:Name="Xbox360IpBox" Watermark="IP address" Width="120"
+                       FontSize="11" Padding="4,2" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+              <Button Grid.Column="2" x:Name="Xbox360ConnectBtn" Content="Connect"
+                      Padding="8,2" FontSize="11" Margin="4,0,0,0" Click="Xbox360Connect_Click" />
+            </Grid>
+            <TextBlock x:Name="Xbox360StatusText" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,4" IsVisible="False" />
+          </StackPanel>
+        </Panel>
+      </MenuItem>
     </Menu>
 
     <!-- Status Bar -->

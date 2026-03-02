@@ -180,6 +180,50 @@ public partial class MainWindow : Window
 		UpdateWelcomeVisibility();
 	}
 
+	private void MenuMemoryPoker_Click(object? sender, RoutedEventArgs e)
+	{
+		// Check if already open
+		foreach (TabItem tab in DocumentTabs.Items.Cast<TabItem>())
+		{
+			if (tab.Tag is string tag && tag == "MemoryPoker")
+			{
+				DocumentTabs.SelectedItem = tab;
+				return;
+			}
+		}
+
+		var pokerView = new MemoryPokerView(this);
+		var newTab = new TabItem
+		{
+			Tag = "MemoryPoker",
+			Content = pokerView
+		};
+
+		var headerPanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+		headerPanel.Children.Add(new TextBlock { Text = "Memory Poker", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+		var closeBtn = new Button
+		{
+			Content = "\u00D7",
+			FontSize = 14,
+			Padding = new Avalonia.Thickness(4, 0),
+			MinWidth = 0,
+			MinHeight = 0,
+			Background = Avalonia.Media.Brushes.Transparent,
+			BorderThickness = new Avalonia.Thickness(0)
+		};
+		closeBtn.Click += (_, _) =>
+		{
+			DocumentTabs.Items.Remove(newTab);
+			UpdateWelcomeVisibility();
+		};
+		headerPanel.Children.Add(closeBtn);
+		newTab.Header = headerPanel;
+
+		DocumentTabs.Items.Add(newTab);
+		DocumentTabs.SelectedItem = newTab;
+		UpdateWelcomeVisibility();
+	}
+
 	private async void MenuAbout_Click(object? sender, RoutedEventArgs e)
 	{
 		var about = new AboutWindow();

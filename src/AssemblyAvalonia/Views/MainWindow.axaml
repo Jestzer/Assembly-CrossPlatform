@@ -19,6 +19,7 @@
       </MenuItem>
       <MenuItem Header="_Tools">
         <MenuItem Header="Map _Compressor" Click="MenuMapCompressor_Click" />
+        <MenuItem Header="Memory _Poker" Click="MenuMemoryPoker_Click" />
       </MenuItem>
       <MenuItem Header="_Help">
         <MenuItem Header="_About Assembly Crossplatform" Click="MenuAbout_Click" />

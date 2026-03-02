@@ -1,0 +1,893 @@
+{
+  "GameName": "Minecraft",
+  "Entries": [
+    {
+      "Offset": "0x820097C4",
+      "Category": "Animal",
+      "Name": "Chicken Size",
+      "DefaultValue": "0.1591549",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82016E5C",
+      "Category": "Animal",
+      "Name": "Kill Animals",
+      "DefaultValue": "0.85",
+      "ValueType": "Float",
+      "Description": "Turn this to 0 and animals die and leave ther valuables behinde.\nAlso I think it works on mobs too* not tested."
+    },
+    {
+      "Offset": "0x820008B0",
+      "Category": "Animal",
+      "Name": "Make Animals Turn Retarded",
+      "DefaultValue": "0.2",
+      "ValueType": "Float",
+      "Description": "Change this to 10 and the animals turn retarded like."
+    },
+    {
+      "Offset": "0x8200D690",
+      "Category": "Animal beta",
+      "Name": "Kill Animals",
+      "DefaultValue": "0.85",
+      "ValueType": "Float",
+      "Description": "Turn this to 0 and animals die and leave ther valuables behinde.\nAlso I think it works on mobs too* not tested."
+    },
+    {
+      "Offset": "0x8200D6CC",
+      "Category": "Crash",
+      "Name": "Crash",
+      "DefaultValue": "",
+      "ValueType": "Float",
+      "Description": "Lags then says exiting server..."
+    },
+    {
+      "Offset": "0x820044C8",
+      "Category": "Fall hieght Beta",
+      "Name": "fall hieght",
+      "DefaultValue": "3",
+      "ValueType": "Float",
+      "Description": "When set above 4 trees take over the map.\nWhen set to four trees make more wood which is a plus."
+    },
+    {
+      "Offset": "0x8200975C",
+      "Category": "Frezz",
+      "Name": "Freez at 0",
+      "DefaultValue": "360",
+      "ValueType": "Float",
+      "Description": "Freezes at 0"
+    },
+    {
+      "Offset": "0x82001494",
+      "Category": "Frezz",
+      "Name": "Frez if changed",
+      "DefaultValue": "0.5",
+      "ValueType": "Float",
+      "Description": "frez if changed"
+    },
+    {
+      "Offset": "0x82005F58",
+      "Category": "Frezz",
+      "Name": "none",
+      "DefaultValue": "-0.1482229",
+      "ValueType": "Float",
+      "Description": "covers world with tree leaves and crashes the game.\nAlso once it crashes (it will crash) it will make it so you have to reboot console to get back to FSD."
+    },
+    {
+      "Offset": "0x820052e8",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Fall Hieght TU3",
+      "DefaultValue": "4.166667E-05",
+      "ValueType": "Float",
+      "Description": "Also Affects tree size so don't make large."
+    },
+    {
+      "Offset": "0x82017FA0",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Jump Speed",
+      "DefaultValue": "0.02",
+      "ValueType": "Float",
+      "Description": "1 is fast enough\nbigger for jumping is faster."
+    },
+    {
+      "Offset": "0x82016EB8",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Kill Animals",
+      "DefaultValue": "0.85",
+      "ValueType": "Float",
+      "Description": "Turn this to 0 and animals die and leave ther valuables behinde.\nAlso I think it works on mobs too* not tested."
+    },
+    {
+      "Offset": "0x82016EC4",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Player walk Speed",
+      "DefaultValue": "0.91",
+      "ValueType": "Float",
+      "Description": "its reverse so 0.50 is good.\nsmaller for walking is faster."
+    },
+    {
+      "Offset": "0x82005284",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Time",
+      "DefaultValue": ".25",
+      "ValueType": "Float",
+      "Description": "Set to 0 for midday."
+    },
+    {
+      "Offset": "0x8205D2fC",
+      "Category": "MineCraft TU3 Known's",
+      "Name": "Time speed",
+      "DefaultValue": "4.166667E-05",
+      "ValueType": "Float",
+      "Description": "Set to 0 to freeze sun position."
+    },
+    {
+      "Offset": "0x82001CF0",
+      "Category": "Player",
+      "Name": "Arm speed (not mineing)",
+      "DefaultValue": "0.125",
+      "ValueType": "Float",
+      "Description": "Changes how fast your arm animation is."
+    },
+    {
+      "Offset": "0x820B48F4",
+      "Category": "Player",
+      "Name": "Block size in hand",
+      "DefaultValue": "-0.72",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4834",
+      "Category": "Player",
+      "Name": "Brake block (look at more)",
+      "DefaultValue": "-0.02",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8200D684",
+      "Category": "Player",
+      "Name": "Camera shake",
+      "DefaultValue": "0.8",
+      "ValueType": "Float",
+      "Description": "Camera shakes if value is changed"
+    },
+    {
+      "Offset": "0x82016E4C",
+      "Category": "Player",
+      "Name": "Camera shake",
+      "DefaultValue": "0.8",
+      "ValueType": "Float",
+      "Description": "none"
+    },
+    {
+      "Offset": "0x82008A1C",
+      "Category": "Player",
+      "Name": "Control View",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": "Change view flat or wide and it fucks your controls"
+    },
+    {
+      "Offset": "0x82712C90",
+      "Category": "Player",
+      "Name": "crash",
+      "DefaultValue": "-0.72",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82005278",
+      "Category": "Player",
+      "Name": "Fall Damage and trees grow too much!",
+      "DefaultValue": "3",
+      "ValueType": "Float",
+      "Description": "Set very high to take no fall damage."
+    },
+    {
+      "Offset": "0x82009170",
+      "Category": "Player",
+      "Name": "Fall thro Ground Freez",
+      "DefaultValue": "1",
+      "ValueType": "Double",
+      "Description": "freez"
+    },
+    {
+      "Offset": "0x82023D90",
+      "Category": "Player",
+      "Name": "Hud  x, y lt and rt up down",
+      "DefaultValue": "-2",
+      "ValueType": "Float",
+      "Description": "Moves the buttons on screen up and down.\nAnd invintory or anyother menu, so youl fuck the alinment up moving this.\n-1 is up\n-2 is down\nthey get smaller as you move them up."
+    },
+    {
+      "Offset": "0x820B4884",
+      "Category": "Player",
+      "Name": "Hud block distortion",
+      "DefaultValue": "3.665191",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4880",
+      "Category": "Player",
+      "Name": "Hud block size from center",
+      "DefaultValue": "0.55",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82009868",
+      "Category": "Player",
+      "Name": "Hud Buttons Position",
+      "DefaultValue": "-1",
+      "ValueType": "Float",
+      "Description": "-1, is left\n-0.5 is meddle\nand 0 is right."
+    },
+    {
+      "Offset": "0x820060F0",
+      "Category": "Player",
+      "Name": "Hud Size",
+      "DefaultValue": "2",
+      "ValueType": "Float",
+      "Description": "Change the size of your hud.\nWhen you change the size it holds one corner, so it gets bigger from one corner, so it forces it off screen where you cant see it."
+    },
+    {
+      "Offset": "0x82006EA0",
+      "Category": "Player",
+      "Name": "Hud Size",
+      "DefaultValue": "2",
+      "ValueType": "Float",
+      "Description": "Make it smaller or bigger, it's hooked to the bottom left of the screen."
+    },
+    {
+      "Offset": "0x8200E6E0",
+      "Category": "Player",
+      "Name": "Jump Speed",
+      "DefaultValue": "0.02",
+      "ValueType": "Float",
+      "Description": "1 is fast enough"
+    },
+    {
+      "Offset": "0x8200D6D0",
+      "Category": "Player",
+      "Name": "Look Sensitivity",
+      "DefaultValue": "",
+      "ValueType": "Float",
+      "Description": "Change how fast you look around."
+    },
+    {
+      "Offset": "0x82712C84",
+      "Category": "Player",
+      "Name": "none",
+      "DefaultValue": "-0.72",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820043EC",
+      "Category": "Player",
+      "Name": "Player view",
+      "DefaultValue": "900",
+      "ValueType": "Float",
+      "Description": "How far the player can look down."
+    },
+    {
+      "Offset": "0x8200D69C",
+      "Category": "Player",
+      "Name": "Player walk Speed",
+      "DefaultValue": "0.91",
+      "ValueType": "Float",
+      "Description": "its reverse so 0.50 is good."
+    },
+    {
+      "Offset": "0x820B4668",
+      "Category": "Player",
+      "Name": "Position Above blocks",
+      "DefaultValue": "-1.507813",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B467C",
+      "Category": "Player",
+      "Name": "Reaction to Damage",
+      "DefaultValue": "-0.2443461",
+      "ValueType": "Float",
+      "Description": "Change to 0 to stop the annoying shake of camera"
+    },
+    {
+      "Offset": "0x820097C8",
+      "Category": "Player",
+      "Name": "Retical Aim Center",
+      "DefaultValue": "3.141593",
+      "ValueType": "Float",
+      "Description": "Moves the center. the + sign gets moved left or right."
+    },
+    {
+      "Offset": "0x82016F10",
+      "Category": "Player",
+      "Name": "Sensitivity",
+      "DefaultValue": "0.15",
+      "ValueType": "Float",
+      "Description": "How fast you look around."
+    },
+    {
+      "Offset": "0x820097C0",
+      "Category": "Player",
+      "Name": "Turns Hud Icons",
+      "DefaultValue": "6.283185",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82001498",
+      "Category": "Player",
+      "Name": "View",
+      "DefaultValue": "0.003921569",
+      "ValueType": "Float",
+      "Description": "How far you can see. Also gives you xray vision on 0."
+    },
+    {
+      "Offset": "0x82001CE8",
+      "Category": "Player",
+      "Name": "View",
+      "DefaultValue": "0.003921569",
+      "ValueType": "Float",
+      "Description": "Messes with your view. Set at ten and it will let you see underground and stuff, I'm not sure what value is the best I just messed with  a few ten seemed cool."
+    },
+    {
+      "Offset": "0x820B4698",
+      "Category": "Player",
+      "Name": "View of world changes",
+      "DefaultValue": "1.000001",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8200519C",
+      "Category": "Player",
+      "Name": "View Up and Down",
+      "DefaultValue": "90",
+      "ValueType": "Float",
+      "Description": "How far you can look down if made larger you can look 360 ass to head."
+    },
+    {
+      "Offset": "0x82000B58",
+      "Category": "Player",
+      "Name": "x ray",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": "See threw stuff at 1."
+    },
+    {
+      "Offset": "0x82001C7C",
+      "Category": "Player",
+      "Name": "x ray",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": "See threw stuff at 1."
+    },
+    {
+      "Offset": "0x820B444C",
+      "Category": "Player Beta",
+      "Name": "Animation for braking cube",
+      "DefaultValue": "-10",
+      "ValueType": "Float",
+      "Description": "-10 is normal but to make the animation stop 0"
+    },
+    {
+      "Offset": "0x820B4418",
+      "Category": "Player Beta",
+      "Name": "arm animation speed",
+      "DefaultValue": "0.09",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B441C",
+      "Category": "Player Beta",
+      "Name": "arm animation speed 2",
+      "DefaultValue": "0.067",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4460",
+      "Category": "Player Beta",
+      "Name": "Cube hud postion",
+      "DefaultValue": "-1.570796",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4068",
+      "Category": "Player Beta",
+      "Name": "Edge map real color",
+      "DefaultValue": "255",
+      "ValueType": "Float",
+      "Description": "o = black"
+    },
+    {
+      "Offset": "0x820B3FE4",
+      "Category": "Player Beta",
+      "Name": "Edge of map color",
+      "DefaultValue": "0.8",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8203FD68",
+      "Category": "Player Beta",
+      "Name": "Gravity",
+      "DefaultValue": "0.08",
+      "ValueType": "Double",
+      "Description": "When you make it so you fly the game kicks you... WTF"
+    },
+    {
+      "Offset": "0x820B4184",
+      "Category": "Player Beta",
+      "Name": "Health and selection hud",
+      "DefaultValue": "3000",
+      "ValueType": "Float",
+      "Description": "hud change not much"
+    },
+    {
+      "Offset": "0x820B406C",
+      "Category": "Player Beta",
+      "Name": "How far you can mine",
+      "DefaultValue": "4",
+      "ValueType": "Float",
+      "Description": "it has a problem: blocks further than normal mining distance replace themselfs.\n\n6 is the best."
+    },
+    {
+      "Offset": "0x820B414C",
+      "Category": "Player Beta",
+      "Name": "how fast particals fly",
+      "DefaultValue": "0.01",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4148",
+      "Category": "Player Beta",
+      "Name": "how fast particals fly and edge map color",
+      "DefaultValue": "0.01",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4394",
+      "Category": "Player Beta",
+      "Name": "Inventory Item Strech view",
+      "DefaultValue": "0.7853982",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4370",
+      "Category": "Player Beta",
+      "Name": "Item select color",
+      "DefaultValue": "0.003921569",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4434",
+      "Category": "Player Beta",
+      "Name": "Item selection size 2",
+      "DefaultValue": "16",
+      "ValueType": "Float",
+      "Description": "makes items smaller or bigger."
+    },
+    {
+      "Offset": "0x820B40D8",
+      "Category": "Player Beta",
+      "Name": "Player body movement",
+      "DefaultValue": "1.4",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4070",
+      "Category": "Player Beta",
+      "Name": "Player Body sensitivity",
+      "DefaultValue": "57.29578",
+      "ValueType": "Float",
+      "Description": "how fast and sensitive the body is at moving."
+    },
+    {
+      "Offset": "0x820B40C8",
+      "Category": "Player Beta",
+      "Name": "Player Color or shadow",
+      "DefaultValue": "0.6",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B41D0",
+      "Category": "Player Beta",
+      "Name": "Player control",
+      "DefaultValue": "180",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4014",
+      "Category": "Player Beta",
+      "Name": "Player Crouch speed",
+      "DefaultValue": "0.3",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B40CC",
+      "Category": "Player Beta",
+      "Name": "Player head position",
+      "DefaultValue": "0.01745329",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B3FF4",
+      "Category": "Player Beta",
+      "Name": "Player Hud icons postion",
+      "DefaultValue": "0.5",
+      "ValueType": "Float",
+      "Description": "Moves icons up and down/horizontal"
+    },
+    {
+      "Offset": "0x820B4190",
+      "Category": "Player Beta",
+      "Name": "Player left arm position",
+      "DefaultValue": "5",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B3FD0",
+      "Category": "Player Beta",
+      "Name": "Player legs positions",
+      "DefaultValue": "12",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4380",
+      "Category": "Player Beta",
+      "Name": "Player limb position",
+      "DefaultValue": "0.0625",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B4008",
+      "Category": "Player Beta",
+      "Name": "Player Senitivity view",
+      "DefaultValue": "50",
+      "ValueType": "Float",
+      "Description": "how fast you look up/down/left/right"
+    },
+    {
+      "Offset": "0x820B3FD4",
+      "Category": "Player Beta",
+      "Name": "Player View",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B3FE0",
+      "Category": "Player Beta",
+      "Name": "Player View Gamma distortion?",
+      "DefaultValue": "1",
+      "ValueType": "Float",
+      "Description": "Larger number is brighter\nlower number 0 = black"
+    },
+    {
+      "Offset": "0x820B4188",
+      "Category": "Player Beta",
+      "Name": "Player view to interaction",
+      "DefaultValue": "0.01745329",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B3FEC",
+      "Category": "Player Beta",
+      "Name": "Player vision distance",
+      "DefaultValue": "0.05",
+      "ValueType": "Float",
+      "Description": "set to larger number to see throught blocks."
+    },
+    {
+      "Offset": "0x820B40C0",
+      "Category": "Player Beta",
+      "Name": "Players Camera Hieght",
+      "DefaultValue": "1.62",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B43BC",
+      "Category": "Player Beta",
+      "Name": "Texture selection size",
+      "DefaultValue": "0.00390625",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820413E8",
+      "Category": "Player Beta",
+      "Name": "Turn Ocean to Ice",
+      "DefaultValue": "0.7",
+      "ValueType": "Double",
+      "Description": "set to 0"
+    },
+    {
+      "Offset": "0x820B40E0",
+      "Category": "Player Beta",
+      "Name": "View distance and particale size",
+      "DefaultValue": "2",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B3FE8",
+      "Category": "Player Beta",
+      "Name": "Water color and display",
+      "DefaultValue": "0.3030303",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820B437C",
+      "Category": "Player Beta",
+      "Name": "World Distance tint",
+      "DefaultValue": ".25",
+      "ValueType": "Float",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82008A10",
+      "Category": "Player/World",
+      "Name": "Control and view",
+      "DefaultValue": "6.283185",
+      "ValueType": "Float",
+      "Description": "if this value is changed it does all sorts of stuff. and also alters time."
+    },
+    {
+      "Offset": "0x82008A18",
+      "Category": "Player/World",
+      "Name": "View",
+      "DefaultValue": "3.141593",
+      "ValueType": "Float",
+      "Description": "Time and view"
+    },
+    {
+      "Offset": "0x82008A14",
+      "Category": "Player/World",
+      "Name": "View",
+      "DefaultValue": "0.1",
+      "ValueType": "Float",
+      "Description": "view"
+    },
+    {
+      "Offset": "0x82005214",
+      "Category": "Time Changes",
+      "Name": "Time",
+      "DefaultValue": ".25",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6"
+    },
+    {
+      "Offset": "0x8205017C",
+      "Category": "Time Changes",
+      "Name": "Time speed",
+      "DefaultValue": "4.166667E-05",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6"
+    },
+    {
+      "Offset": "0x8205BB04",
+      "Category": "Time Changes",
+      "Name": "Time speed updated mc",
+      "DefaultValue": "4.166667E-05",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6"
+    },
+    {
+      "Offset": "0x8203E314",
+      "Category": "TU16",
+      "Name": "Force Field",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": "0 on< > off 0.85"
+    },
+    {
+      "Offset": "0x820DC280",
+      "Category": "TU16",
+      "Name": "Giant Size",
+      "DefaultValue": "-3",
+      "ValueType": "Float",
+      "Description": "-4 on< >off -1"
+    },
+    {
+      "Offset": "0x82027A48",
+      "Category": "TU16",
+      "Name": "No Fall Damage",
+      "DefaultValue": "100",
+      "ValueType": "Float",
+      "Description": "100 on < >off 3"
+    },
+    {
+      "Offset": "0x8203E320",
+      "Category": "TU16",
+      "Name": "Superspeed",
+      "DefaultValue": "0.5",
+      "ValueType": "Float",
+      "Description": "0.5 on << >>off 0.91"
+    },
+    {
+      "Offset": "0x82027A10",
+      "Category": "TU16",
+      "Name": "Time",
+      "DefaultValue": "5",
+      "ValueType": "Float",
+      "Description": "start at 5 and 6,7,8, and up"
+    },
+    {
+      "Offset": "0x82004430",
+      "Category": "View",
+      "Name": "Sky Light Distance",
+      "DefaultValue": "16",
+      "ValueType": "Double",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82002178",
+      "Category": "Wierd",
+      "Name": "Crash",
+      "DefaultValue": "1",
+      "ValueType": "Float",
+      "Description": "Crash if set to 0."
+    },
+    {
+      "Offset": "0x820008BC",
+      "Category": "Wierd",
+      "Name": "Display funck",
+      "DefaultValue": "0",
+      "ValueType": "Float",
+      "Description": "makes the screen go all kinds of fucked up."
+    },
+    {
+      "Offset": "0x82016ED0",
+      "Category": "World",
+      "Name": "Block Blow up position",
+      "DefaultValue": "0.7",
+      "ValueType": "Float",
+      "Description": "Where the block will land."
+    },
+    {
+      "Offset": "0x82012FCC",
+      "Category": "World",
+      "Name": "Frezz NPC's and YOU",
+      "DefaultValue": "0.01",
+      "ValueType": "Float",
+      "Description": "set to 1 or higher, recomend not higher then 3"
+    },
+    {
+      "Offset": "0x82001CE4",
+      "Category": "World",
+      "Name": "Make it look like your in space.",
+      "DefaultValue": "0.5",
+      "ValueType": "Float",
+      "Description": "Makes the whole world fuck up. Too high a number like past 6 will crash the game."
+    },
+    {
+      "Offset": "0x82001CE0",
+      "Category": "World",
+      "Name": "Selection For Cubes",
+      "DefaultValue": "8",
+      "ValueType": "Float",
+      "Description": "Makes the highlight bigger or fuzier."
+    },
+    {
+      "Offset": "0x82001CEC",
+      "Category": "World",
+      "Name": "Sky Color",
+      "DefaultValue": "255",
+      "ValueType": "Float",
+      "Description": "Changes the color of the sky. I like 233 blue"
+    },
+    {
+      "Offset": "0x8200D938",
+      "Category": "World",
+      "Name": "Sound Buz",
+      "DefaultValue": "",
+      "ValueType": "Float",
+      "Description": "Makes buzzing noise when changed."
+    },
+    {
+      "Offset": "0x8200527C",
+      "Category": "World",
+      "Name": "Tree Headge",
+      "DefaultValue": "9",
+      "ValueType": "Float",
+      "Description": "use this to crash the game:)"
+    },
+    {
+      "Offset": "0x82004488",
+      "Category": "World",
+      "Name": "water something",
+      "DefaultValue": "-0.04444445",
+      "ValueType": "Float",
+      "Description": "makes water stay still if changed"
+    },
+    {
+      "Offset": "0x82001CFC",
+      "Category": "World",
+      "Name": "Weather?",
+      "DefaultValue": "-8",
+      "ValueType": "Float",
+      "Description": "changed it to -1 and it rained, maybe was just part of the game."
+    },
+    {
+      "Offset": "0x82050178",
+      "Category": "World beta",
+      "Name": "Cloud Hieght",
+      "DefaultValue": "0.7962353",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6\n\nfull value is .10"
+    },
+    {
+      "Offset": "0x82050174",
+      "Category": "World beta",
+      "Name": "Full sky edge color",
+      "DefaultValue": "0.7962353",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6\n\nfull value is .10"
+    },
+    {
+      "Offset": "0x8204EFD4",
+      "Category": "World beta",
+      "Name": "Sky color",
+      "DefaultValue": "0.6222222",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6\n\nfull value is .10"
+    },
+    {
+      "Offset": "0x8205016C",
+      "Category": "World beta",
+      "Name": "Sky edge color",
+      "DefaultValue": "0.6222222",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6\n\nfull value is .10"
+    },
+    {
+      "Offset": "0x82050170",
+      "Category": "World beta",
+      "Name": "Sky edge color 2",
+      "DefaultValue": "0.6222222",
+      "ValueType": "Float",
+      "Description": "blocks glitch away and time changes.\n20 is sun rize\n\nset it to .5 brunch time\nset it to .8 night fall = half day\nset it to .11 night fall =half day\nset it to 40 = half day\nset to .70 = half day\n\ngo by .3\nor by .6\n\nfull value is .10"
+    },
+    {
+      "Offset": "0x820B4154",
+      "Category": "World beta",
+      "Name": "Sun Size",
+      "DefaultValue": "100",
+      "ValueType": "Float",
+      "Description": "smaller is bigger, bigger is sammler"
+    },
+    {
+      "Offset": "0x82003318",
+      "Category": "World beta",
+      "Name": "think it changed water to ice",
+      "DefaultValue": "0.5",
+      "ValueType": "Double",
+      "Description": ""
+    }
+  ]
+}

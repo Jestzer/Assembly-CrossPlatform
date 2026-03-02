@@ -1,0 +1,461 @@
+{
+  "GameName": "Halo Combat Evolved Anniversary",
+  "Entries": [
+    {
+      "Offset": "0x82000B00",
+      "Category": "Animation",
+      "Name": "Game Transition",
+      "DefaultValue": "1023",
+      "ValueType": "Float",
+      "Description": "The faid for transitioning between game times"
+    },
+    {
+      "Offset": "0x82000AE0",
+      "Category": "Animation",
+      "Name": "Test me",
+      "DefaultValue": "3.051851E-05",
+      "ValueType": "Float",
+      "Description": "test"
+    },
+    {
+      "Offset": "0x834B39C9",
+      "Category": "Cheats",
+      "Name": "Bottomless Clip",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C3",
+      "Category": "Cheats",
+      "Name": "Bump Posession",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C0",
+      "Category": "Cheats",
+      "Name": "Deathless Player",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C5",
+      "Category": "Cheats",
+      "Name": "Infinite Ammo",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C4",
+      "Category": "Cheats",
+      "Name": "Jetpack (Super Jump)",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C6",
+      "Category": "Cheats",
+      "Name": "Medusa Mode",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": "All enemies the look at you die."
+    },
+    {
+      "Offset": "0x834B39C7",
+      "Category": "Cheats",
+      "Name": "One Shot Kill",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B39C1",
+      "Category": "Cheats",
+      "Name": "Unknown Cheat 1",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": "Dunno"
+    },
+    {
+      "Offset": "0x834B39C2",
+      "Category": "Cheats",
+      "Name": "Unknown Cheat 2",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": "Dunno"
+    },
+    {
+      "Offset": "0x820009EC",
+      "Category": "Controls",
+      "Name": "Weird Invert",
+      "DefaultValue": "1.142822",
+      "ValueType": "Float",
+      "Description": "Inverts sticks"
+    },
+    {
+      "Offset": "0x8245397F",
+      "Category": "Debug",
+      "Name": "Activate",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": "set  to 1"
+    },
+    {
+      "Offset": "0x83672B0C",
+      "Category": "Debug",
+      "Name": "Blank Textures (Remastered)",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x45797F",
+      "Category": "Debug",
+      "Name": "Debug Menu",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": "1 to activate"
+    },
+    {
+      "Offset": "0x83623BE0",
+      "Category": "Debug",
+      "Name": "Disable Effects",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8346B239",
+      "Category": "Debug",
+      "Name": "Disable Motion Tracker",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83770051",
+      "Category": "Debug",
+      "Name": "End Game",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD14",
+      "Category": "Debug",
+      "Name": "Force Checkpoint",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD26",
+      "Category": "Debug",
+      "Name": "Next Level",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8346B285",
+      "Category": "Debug",
+      "Name": "Red Box (Classic Mode)",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD10",
+      "Category": "Debug",
+      "Name": "Restarty",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD12",
+      "Category": "Debug",
+      "Name": "Revert Checkpoint",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD27",
+      "Category": "Debug",
+      "Name": "Reverty",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8346B246",
+      "Category": "Debug",
+      "Name": "Wireframe (Classic Mode)",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623BF1",
+      "Category": "Freezers",
+      "Name": "Crash",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623C45",
+      "Category": "Freezers",
+      "Name": "Fatal Crash",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623C79",
+      "Category": "Freezers",
+      "Name": "Fatal Freeze",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x82430204",
+      "Category": "Function Callers",
+      "Name": "remove map checks TU1",
+      "DefaultValue": "192439.8",
+      "ValueType": "Float",
+      "Description": "change float to 192439\n\nremoves map checks\n\nnot sure what other values do yet\n\ndont poke back to normal or freeze (as for all of these function callers)"
+    },
+    {
+      "Offset": "0x83553DDB",
+      "Category": "Kinect",
+      "Name": "Switch Weapons",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83553DDA",
+      "Category": "Kinect",
+      "Name": "Throw Grenade",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD41",
+      "Category": "Misc",
+      "Name": "Also Halt",
+      "DefaultValue": "1",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83435D00",
+      "Category": "Misc",
+      "Name": "Blinks AR counter",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x837B83D8",
+      "Category": "Misc",
+      "Name": "Cant Attack",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FCB5",
+      "Category": "Misc",
+      "Name": "Detach FP Models",
+      "DefaultValue": "1",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83554140",
+      "Category": "Misc",
+      "Name": "Fadey",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623BDC",
+      "Category": "Misc",
+      "Name": "Foggy Something",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x835540A6",
+      "Category": "Misc",
+      "Name": "Freeze U",
+      "DefaultValue": "1",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x837B01D0",
+      "Category": "Misc",
+      "Name": "Halt",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD33",
+      "Category": "Misc",
+      "Name": "Halty",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD29",
+      "Category": "Misc",
+      "Name": "Lags for a sec",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623BDD",
+      "Category": "Misc",
+      "Name": "More Darky",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x835540A7",
+      "Category": "Misc",
+      "Name": "Out of Body",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623BDE",
+      "Category": "Misc",
+      "Name": "Things are darker",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8376FD2F",
+      "Category": "Misc",
+      "Name": "Turn into Main Menu?",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83553DD8",
+      "Category": "Misc",
+      "Name": "You Halt",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x834B38D0",
+      "Category": "Misc - Classic",
+      "Name": "Detach FP Limbs",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x837E9A6B",
+      "Category": "Misc - Classic",
+      "Name": "Invisible Objects",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x837E9A80",
+      "Category": "Misc - Classic",
+      "Name": "Ugly Textures",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820009E8",
+      "Category": "Speed",
+      "Name": "FPS",
+      "DefaultValue": "30",
+      "ValueType": "Float",
+      "Description": "Up for faster"
+    },
+    {
+      "Offset": "0x835540B2",
+      "Category": "Toggles",
+      "Name": "HUD",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x83623BDB",
+      "Category": "Toggles",
+      "Name": "Sky (Remastered)",
+      "DefaultValue": "0",
+      "ValueType": "Byte",
+      "Description": ""
+    },
+    {
+      "Offset": "0x8346B210",
+      "Category": "View",
+      "Name": "Map View Port",
+      "DefaultValue": "1024",
+      "ValueType": "Float",
+      "Description": "down for closer port"
+    },
+    {
+      "Offset": "0x82000BC8",
+      "Category": "View",
+      "Name": "Perspective",
+      "DefaultValue": "1",
+      "ValueType": "Double",
+      "Description": ""
+    },
+    {
+      "Offset": "0x820009D4",
+      "Category": "View",
+      "Name": "Vehicle Perspective",
+      "DefaultValue": "0.6",
+      "ValueType": "Float",
+      "Description": "Up FOr Ferther out view"
+    },
+    {
+      "Offset": "0x82000A40",
+      "Category": "View",
+      "Name": "Zoom in",
+      "DefaultValue": "57.29578",
+      "ValueType": "Float",
+      "Description": "Down For Zoom In"
+    },
+    {
+      "Offset": "0x82000A44",
+      "Category": "View",
+      "Name": "Zoom in Speed",
+      "DefaultValue": "5",
+      "ValueType": "Float",
+      "Description": "Up for faster"
+    }
+  ]
+}

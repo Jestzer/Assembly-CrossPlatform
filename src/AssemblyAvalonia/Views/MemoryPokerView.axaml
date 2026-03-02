@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AssemblyAvalonia.Views.MemoryPokerView">
+
+  <DockPanel Margin="16">
+
+    <!-- Top: Connection + Filters -->
+    <StackPanel DockPanel.Dock="Top" Spacing="12" Margin="0,0,0,12">
+
+      <!-- Console Connection -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="12">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Console Connection" FontSize="14" FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Xbox 360 IP:" VerticalAlignment="Center"
+                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+            <TextBox x:Name="ConsoleIpBox" Watermark="192.168.1.100" Width="150"
+                     FontSize="12" Padding="6,4" VerticalAlignment="Center" />
+            <Button x:Name="ConnectBtn" Content="Connect" Click="Connect_Click"
+                    Padding="12,4" FontSize="12" />
+            <TextBlock x:Name="ConnectionStatus" Text="Disconnected" VerticalAlignment="Center"
+                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Game + Filters -->
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="12">
+        <StackPanel Spacing="6">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Game:" VerticalAlignment="Center"
+                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+            <ComboBox x:Name="GameCombo" Width="250" FontSize="12"
+                      SelectionChanged="GameCombo_SelectionChanged" />
+            <TextBlock Text="Category:" VerticalAlignment="Center" Margin="12,0,0,0"
+                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" />
+            <ComboBox x:Name="CategoryCombo" Width="180" FontSize="12"
+                      SelectionChanged="CategoryCombo_SelectionChanged" />
+          </StackPanel>
+          <TextBox x:Name="SearchBox" Watermark="Search entries..." FontSize="12" Padding="6,4"
+                   TextChanged="SearchBox_TextChanged" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <!-- Bottom: Actions + Status -->
+    <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,12,0,0">
+      <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="12">
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Poke Selected" Click="PokeSelected_Click" Padding="12,6" FontSize="12" />
+            <Button Content="Poke All Changed" Click="PokeAllChanged_Click" Padding="12,6" FontSize="12" />
+            <Button Content="Reset All" Click="ResetAll_Click" Padding="12,6" FontSize="12" />
+            <Border Width="1" Background="{StaticResource TextSecondaryBrush}" Margin="4,2" />
+            <Button Content="Add Entry" Click="AddEntry_Click" Padding="12,6" FontSize="12" />
+            <Button Content="Remove Selected" Click="RemoveSelected_Click" Padding="12,6" FontSize="12" />
+            <Button Content="Save Database" Click="SaveDatabase_Click" Padding="12,6" FontSize="12" />
+            <Button Content="Import .val" Click="ImportVal_Click" Padding="12,6" FontSize="12" />
+          </StackPanel>
+          <TextBlock x:Name="StatusText" Text="Ready" FontSize="11"
+                     Foreground="{StaticResource TextSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <!-- Center: Entry List -->
+    <Border Background="{StaticResource SidebarBackgroundBrush}" CornerRadius="4" Padding="0">
+      <DockPanel>
+        <!-- Column Headers -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource AccentBrush}" Padding="8,6">
+          <Grid ColumnDefinitions="110,120,*,70,100,100">
+            <TextBlock Grid.Column="0" Text="Offset" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="1" Text="Category" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="2" Text="Name" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="3" Text="Type" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="4" Text="Value" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="5" Text="Default" FontSize="12" FontWeight="Bold" Foreground="White" />
+          </Grid>
+        </Border>
+
+        <!-- Scrollable Entry List -->
+        <ListBox x:Name="EntryList" SelectionChanged="EntryList_SelectionChanged"
+                 Background="Transparent" BorderThickness="0">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="110,120,*,70,100,100" Margin="0,2">
+                <TextBlock Grid.Column="0" Text="{Binding Offset}" FontSize="11"
+                           FontFamily="Cascadia Mono,Consolas,Courier New,monospace"
+                           Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="2" Text="{Binding Name}" FontSize="11"
+                           Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip.Tip="{Binding Description}" />
+                <TextBlock Grid.Column="3" Text="{Binding ValueType}" FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                <TextBox Grid.Column="4" Text="{Binding CurrentValue, Mode=TwoWay}"
+                         FontSize="11" Padding="4,2"
+                         FontFamily="Cascadia Mono,Consolas,Courier New,monospace" />
+                <TextBlock Grid.Column="5" Text="{Binding DefaultValue}" FontSize="11"
+                           FontFamily="Cascadia Mono,Consolas,Courier New,monospace"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+  </DockPanel>
+
+</UserControl>

@@ -39,4 +39,11 @@
           LinkBase="Plugins" />
   </ItemGroup>
 
+  <!-- Copy Poke databases to output -->
+  <ItemGroup>
+    <None Include="Pokes\**\*"
+          CopyToOutputDirectory="PreserveNewest"
+          LinkBase="Pokes" />
+  </ItemGroup>
+
 </Project>

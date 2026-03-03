@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Timers;
 
@@ -8,6 +8,7 @@ namespace Blamite.RTE.Console
 	{
 		// Private Modifiers
 		private readonly XConsole _console;
+		private readonly object _cacheLock = new();
 		private uint? _cachedAddress;
 		private byte[] _cachedData;
 
@@ -63,38 +64,43 @@ namespace Blamite.RTE.Console
 			if (count == 0)
 				return 0;
 
-			//stop the timer so data isnt cleared mid-read
-			_staleTimer.Stop();
-
 			//check if cached
 			uint clippedAddress = (uint)Position & 0xFFFFF000;
 			uint clippedLength = ((uint)count + 0x1000) & 0xFFFFF000;
 			uint cacheOffset = (uint)Position - clippedAddress;
 
-			if (_cachedAddress.HasValue && _cachedAddress == clippedAddress)
+			lock (_cacheLock)
 			{
-				if (cacheOffset + count < _cachedData.Length)
-				{
-					Buffer.BlockCopy(_cachedData, (int)cacheOffset, buffer, offset, count);
-					Position += count;
-					return count;
-				}
-			}
+				_staleTimer.Stop();
 
-			//cache didnt match, nuke it
-			ClearCache();
+				if (_cachedAddress.HasValue && _cachedAddress == clippedAddress)
+				{
+					if (cacheOffset + count < _cachedData.Length)
+					{
+						Buffer.BlockCopy(_cachedData, (int)cacheOffset, buffer, offset, count);
+						Position += count;
+						_staleTimer.Start();
+						return count;
+					}
+				}
+
+				//cache didnt match, nuke it
+				ClearCache();
+			}
 
 			uint bytesRead;
 			if (!_console.Connect())
 			{
-				_staleTimer.Start();
+				lock (_cacheLock)
+					_staleTimer.Start();
 				return 0;
 			}
-				
+
 			var tempBuffer = _console.ReadMemoryInternal(clippedAddress, clippedLength, out bytesRead);
 			if (bytesRead == 0)
 			{
-				_staleTimer.Start();
+				lock (_cacheLock)
+					_staleTimer.Start();
 				_console.Disconnect();
 				return 0;
 			}
@@ -103,10 +109,13 @@ namespace Blamite.RTE.Console
 			Position += count;
 
 			//cache the data
-			_cachedAddress = clippedAddress;
-			_cachedData = tempBuffer;
+			lock (_cacheLock)
+			{
+				_cachedAddress = clippedAddress;
+				_cachedData = tempBuffer;
+				_staleTimer.Start();
+			}
 
-			_staleTimer.Start();
 			_console.Disconnect();
 
 			return (int)bytesRead;
@@ -120,11 +129,11 @@ namespace Blamite.RTE.Console
 				case SeekOrigin.Begin:
 					Position = offset + _forceOffset;
 					break;
-		
+
 				case SeekOrigin.Current:
 					Position += offset;
 					break;
-		
+
 				case SeekOrigin.End:
 					Position = 0x100000000 - offset;
 					break;
@@ -150,7 +159,7 @@ namespace Blamite.RTE.Console
 				pokeArray = new byte[count];
 				Buffer.BlockCopy(buffer, offset, pokeArray, 0, count);
 			}
-		
+
 			uint bytesWritten;
 			_console.WriteMemoryInternal((uint)Position, count, pokeArray, out bytesWritten);
 			Position += bytesWritten;
@@ -160,7 +169,10 @@ namespace Blamite.RTE.Console
 
 		private void StaleTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
-			ClearCache();
+			lock (_cacheLock)
+			{
+				ClearCache();
+			}
 		}
 
 		private void ClearCache()

@@ -35,6 +35,7 @@ public partial class HaloMapView : UserControl, IDisposable
 	private RTEConnectionType? _consolePlatform;
 	private Dictionary<int, string> _sharedMapOverrides = new();
 	private List<HeaderValue> _headerValues;
+	private volatile bool _disposed;
 
 	// Cached lowercase names for fast search
 	private Dictionary<TagGroup, string> _lowerGroupMagic;
@@ -121,11 +122,24 @@ public partial class HaloMapView : UserControl, IDisposable
 		}
 
 		// Open the file
-		_fileStream = File.OpenRead(_filePath);
-		_reader = new EndianReader(_fileStream, Endian.BigEndian);
+		var fileStream = File.OpenRead(_filePath);
+		var reader = new EndianReader(fileStream, Endian.BigEndian);
+
+		if (_disposed)
+		{
+			reader.Dispose();
+			fileStream.Dispose();
+			return;
+		}
+
+		_fileStream = fileStream;
+		_reader = reader;
 
 		// Load cache file (endianness is corrected inside based on engine)
 		_cacheFile = CacheFileLoader.LoadCacheFile(_reader, _filePath, AppState.EngineDb, out _buildInfo);
+
+		if (_disposed)
+			return;
 
 		// Create RTE provider for poking if supported
 		if (_buildInfo.PokingPlatform == RTEConnectionType.LocalProcess32 ||
@@ -242,9 +256,15 @@ public partial class HaloMapView : UserControl, IDisposable
 			headerValues.Add(new HeaderValue("Shared Map", $"{srcName} \u2192 {Path.GetFileName(kvp.Value)}"));
 		}
 
+		if (_disposed)
+			return;
+
 		// Update UI on dispatcher thread
 		Dispatcher.UIThread.Post(() =>
 		{
+			if (_disposed)
+				return;
+
 			_sharedMapOverrides = sharedOverrides;
 			_headerValues = headerValues;
 			HeaderList.ItemsSource = headerValues;
@@ -646,6 +666,8 @@ public partial class HaloMapView : UserControl, IDisposable
 
 	public void Dispose()
 	{
+		_disposed = true;
+
 		// Save sidebar width before disposing.
 		// When the user drags the GridSplitter, Avalonia converts the column
 		// width to an absolute pixel value — read it back from the GridLength.
